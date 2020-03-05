@@ -50,9 +50,9 @@ int main(int argc, char *argv[]) {
 	}
 	
 	//Load resources here
-	Texture background("res/Backgrounds/Background_Space.png");
-	Texture ball("res/Balls/Ball.png");
-	Texture paddle("res/Paddles/Paddle.png");
+	Texture background("res/Backgrounds/Background_Hockey.png");
+	Texture ball("res/Balls/Puck.png");
+	Texture paddle("res/Paddles/Paddle_AH.png");
 	
 
 	Sprite backgroundSprite(&background, { 0,0 }, { 1300,720 });
