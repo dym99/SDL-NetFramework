@@ -1,5 +1,6 @@
 #include "Scene.h"
-
+#include "Debug.h"
+#include <algorithm>
 Scene::Scene()
 {
 }
@@ -15,16 +16,15 @@ void Scene::update()
 	}
 }
 
-int spriteSortFunc(const void* a, const void* b) {
-	Sprite* spriteA = (Sprite*)a;
-	Sprite* spriteB = (Sprite*)b;
-	return spriteA->getZOrder() > spriteB->getZOrder();
+bool spriteSortFunc(Sprite* a, Sprite* b) {
+	DEBUG_LOG("HALP %f, %f\n", a->getZOrder(), b->getZOrder());
+	return (a->getZOrder() > b->getZOrder());
 }
 
 void Scene::render()
 {
+	std::sort(m_sprites.begin(), m_sprites.end(), spriteSortFunc);
 	for (size_t i = 0; i < m_sprites.size(); ++i) {
-		qsort(&m_sprites[0], m_sprites.size(), sizeof(Sprite*), spriteSortFunc);
 		m_sprites[i]->render();
 	}
 }

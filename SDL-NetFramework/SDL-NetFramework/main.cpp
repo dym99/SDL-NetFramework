@@ -3,7 +3,7 @@
 #include "Window.h"
 #include "Debug.h"
 #include "Events.h"
-#include "TestScene.h"
+#include "Scene.h"
 
 int main(int argc, char *argv[]) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -18,11 +18,18 @@ int main(int argc, char *argv[]) {
 	}
 	
 	//Load resources here
+	Texture ball("res/Balls/Ball.png");
+	
+
+
+	Sprite ballSprite(&ball, { 32, 32 }, { 32, 32 });
+	Sprite ballSprite2(&ball, { 48, 48 }, { 32, 32 });
 
 
 	//Scenes here
 	Scene testScene;
-
+	testScene.addSprite(&ballSprite);
+	testScene.addSprite(&ballSprite2);
 
 	Scene* currentScene = &testScene;
 

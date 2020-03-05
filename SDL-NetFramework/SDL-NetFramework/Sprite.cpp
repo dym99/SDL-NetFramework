@@ -5,9 +5,9 @@ Sprite::Sprite(Texture* _texture, const glm::vec2& _position, const glm::vec2& _
 	m_texture = _texture;
 	m_pos = _position;
 	m_dim = _dimensions;
-	m_angle = 0;
+	m_angle = 0.0f;
 	m_flip = SDL_FLIP_NONE;
-	m_zOrder = 0;
+	m_zOrder = 0.0f;
 }
 
 Sprite::~Sprite()
@@ -67,7 +67,7 @@ SDL_RendererFlip Sprite::getFlip() const
 	return m_flip;
 }
 
-void Sprite::setZOrder(float _zOrder)
+void Sprite::setZOrder(const float &_zOrder)
 {
 	m_zOrder = _zOrder;
 }

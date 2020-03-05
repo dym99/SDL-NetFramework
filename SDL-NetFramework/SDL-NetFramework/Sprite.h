@@ -25,7 +25,7 @@ public:
 	void setFlip(const SDL_RendererFlip& _flip);
 	SDL_RendererFlip getFlip() const;
 
-	void setZOrder(float _zOrder);
+	void setZOrder(const float& _zOrder);
 	float getZOrder() const;
 
 	virtual void update();
