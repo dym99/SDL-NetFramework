@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Debug.h"
 #include "Events.h"
+#include "TestScene.h"
 
 int main(int argc, char *argv[]) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -19,6 +20,12 @@ int main(int argc, char *argv[]) {
 	//Load resources here
 
 
+	//Scenes here
+	Scene testScene;
+
+
+	Scene* currentScene = &testScene;
+
 	//Run application
 	SDL_Event event;
 	while (Window::isOpen()) {
@@ -33,12 +40,12 @@ int main(int argc, char *argv[]) {
 		}
 
 		//Update
-
+		currentScene->update();
 
 		//Render
 		Window::clear(0, 0, 0, 1);
 
-		//draw heres
+		currentScene->render();
 
 		Window::present();
 	}

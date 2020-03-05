@@ -21,6 +21,12 @@
     <Filter Include="Source Files\Util">
       <UniqueIdentifier>{af062129-3af6-42eb-99ed-178a1902c89b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Physics">
+      <UniqueIdentifier>{b38c9859-e2f0-4afb-acca-32e2aad688f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scene">
+      <UniqueIdentifier>{9280025f-5c9c-4a8a-955e-07c10fc64dc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -35,6 +41,15 @@
     <ClCompile Include="Events.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -48,6 +63,15 @@
     </ClInclude>
     <ClInclude Include="Debug.h">
       <Filter>Source Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Source Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

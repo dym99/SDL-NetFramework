@@ -19,8 +19,9 @@ bool Texture::isOk() const
 	return m_ok;
 }
 
-void Texture::render(const SDL_Rect& bounds)
+void Texture::render(const SDL_Rect& _bounds, const float& _angle, const SDL_Point& _pivot, const SDL_RendererFlip& _flip)
 {
-	if (Window::isOpen())
-		SDL_RenderCopy(Window::getRenderer(), m_texture, NULL, &bounds);
+	if (!Window::isOpen()) return;
+
+	SDL_RenderCopyEx(Window::getRenderer(), m_texture, NULL, &_bounds, _angle, &_pivot, _flip);
 }

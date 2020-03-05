@@ -9,7 +9,7 @@ public:
 
 	bool isOk() const;
 
-	void render(const SDL_Rect& bounds);
+	void render(const SDL_Rect& bounds, const float& _angle = 0.0f, const SDL_Point& _pivot = { 0, 0 }, const SDL_RendererFlip& _flip = SDL_FLIP_NONE);
 
 private:
 	SDL_Texture* m_texture;
