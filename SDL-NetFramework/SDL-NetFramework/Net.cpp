@@ -2,6 +2,14 @@
 
 #include "Debug.h"
 
+SOCKET Net::m_TCPSock = INVALID_SOCKET;
+SOCKET Net::m_UDPSock = INVALID_SOCKET;
+
+
+bool Net::m_TCPOpen = false;
+bool Net::m_UDPOpen = false;
+
+
 void Net::init()
 {
 	WSADATA data;
