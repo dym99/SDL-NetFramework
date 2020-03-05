@@ -151,7 +151,7 @@ std::string Net::recvTCP()
 {
 	if (!m_TCPOpen) {
 		DEBUG_LOG("TCP socket is not open!\n");
-		return false;
+		return "";
 	}
 	//Create empty buffer
 	char buf[NET_BUFFER_LEN];
@@ -173,7 +173,7 @@ std::string Net::recvTCP(int from)
 {
 	if (!m_TCPOpen) {
 		DEBUG_LOG("TCP socket is not open!\n");
-		return false;
+		return "";
 	}
 	//Create empty buffer
 	char buf[NET_BUFFER_LEN];
@@ -208,7 +208,7 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 {
 	if (!m_UDPOpen) {
 		DEBUG_LOG("UDP socket is not open!\n");
-		return false;
+		return "";
 	}
 	//Create empty buffer
 	char buf[NET_BUFFER_LEN];
