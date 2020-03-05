@@ -17,7 +17,6 @@ void Scene::update()
 }
 
 bool spriteSortFunc(Sprite* a, Sprite* b) {
-	DEBUG_LOG("HALP %f, %f\n", a->getZOrder(), b->getZOrder());
 	return (a->getZOrder() > b->getZOrder());
 }
 

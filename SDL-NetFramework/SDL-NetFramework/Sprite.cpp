@@ -8,6 +8,7 @@ Sprite::Sprite(Texture* _texture, const glm::vec2& _position, const glm::vec2& _
 	m_angle = 0.0f;
 	m_flip = SDL_FLIP_NONE;
 	m_zOrder = 0.0f;
+	m_behaviours = std::vector<IBehaviour*>();
 }
 
 Sprite::~Sprite()
@@ -77,8 +78,24 @@ float Sprite::getZOrder() const
 	return m_zOrder;
 }
 
+void Sprite::addBehaviour(IBehaviour* _behaviour)
+{
+	m_behaviours.push_back(_behaviour);
+	_behaviour->setSprite(this);
+}
+
+void Sprite::init()
+{
+	for (size_t i = 0; i < m_behaviours.size(); ++i) {
+		m_behaviours[i]->init();
+	}
+}
+
 void Sprite::update()
 {
+	for (size_t i = 0; i < m_behaviours.size(); ++i) {
+		m_behaviours[i]->update();
+	}
 }
 
 void Sprite::render()

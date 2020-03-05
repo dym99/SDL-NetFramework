@@ -62,8 +62,6 @@ public:
 	void newFrame();
 	void processEvent(SDL_Event _event);
 
-	void update();
-
 	void setJoyDeadZone(float _deadzone);
 	float getJoyDeadZone();
 
@@ -84,7 +82,6 @@ private:
 	std::vector<int> m_buttonDown;
 	std::vector<int> m_buttonUp;
 
-	SDL_Event m_event;
 	SDL_GameController* m_controller;
 
 	int m_mousePosition[2];

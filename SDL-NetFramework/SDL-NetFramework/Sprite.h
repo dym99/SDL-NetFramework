@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Texture.h"
+#include "IBehaviour.h"
 
 #include <glm/glm.hpp>
+#include <vector>
 
 class Sprite
 {
@@ -28,8 +30,11 @@ public:
 	void setZOrder(const float& _zOrder);
 	float getZOrder() const;
 
-	virtual void update();
-	virtual void render();
+	void addBehaviour(IBehaviour* _behaviour);
+
+	void init();
+	void update();
+	void render();
 private:
 	Texture* m_texture;
 	glm::vec2 m_pos, m_dim;
@@ -37,5 +42,7 @@ private:
 	SDL_RendererFlip m_flip;
 
 	float m_zOrder;
+
+	std::vector<IBehaviour*> m_behaviours;
 };
 

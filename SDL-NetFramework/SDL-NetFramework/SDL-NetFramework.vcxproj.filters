@@ -27,6 +27,15 @@
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{9280025f-5c9c-4a8a-955e-07c10fc64dc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Objects">
+      <UniqueIdentifier>{13136714-53a0-49b9-af4b-692ad6ab2d8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Behaviours">
+      <UniqueIdentifier>{4c5e45ec-4d49-4035-a064-a45a5f642a69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Net">
+      <UniqueIdentifier>{0c7a3010-4d9c-455d-98b6-ee25551de178}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,8 +56,20 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="PaddleBehaviour.cpp">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="IBehaviour.cpp">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="Net.cpp">
+      <Filter>Source Files\Net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,8 +91,20 @@
     <ClInclude Include="Scene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Source Files\Util</Filter>
+    </ClInclude>
     <ClInclude Include="Sprite.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="IBehaviour.h">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="PaddleBehaviour.h">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="Net.h">
+      <Filter>Source Files\Net</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

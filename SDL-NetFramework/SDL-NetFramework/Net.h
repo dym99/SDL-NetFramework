@@ -1,0 +1,49 @@
+#pragma once
+
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+
+#include <string>
+
+#define NET_MAX_CONNECTIONS 2
+#define NET_BUFFER_LEN 512
+
+class Net
+{
+public:
+	static void init();
+	static void cleanup();
+
+	//Socket creation
+	static bool startUDPSocket();
+	static bool startTCPSocket();
+
+	//Socket binding
+	static bool bindUDP(unsigned short port);
+	static bool bindTCP(unsigned short port);
+
+	//TCP proto stuff
+	static bool listenTCP();
+	static bool connectTCP(const sockaddr* addrinfo, int namelen);
+	static int acceptTCP();
+	static bool sendTCP(std::string data);
+	static bool sendTCP(int destination, std::string data);
+	static std::string recvTCP();
+	static std::string recvTCP(int from);
+
+	//UDP proto stuff
+	static bool sendToUDP(const sockaddr* destination, int namelen, std::string data);
+	static std::string recvFromUDP(sockaddr* from, int* fromlen);
+
+	//Close sockets
+	static void closeUDPSocket();
+	static void closeTCPSocket();
+
+private:
+	static SOCKET m_UDPSock;
+	static SOCKET m_TCPSock;
+
+	static bool m_UDPOpen;
+	static bool m_TCPOpen;
+};
+

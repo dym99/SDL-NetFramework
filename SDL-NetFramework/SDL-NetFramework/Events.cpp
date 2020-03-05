@@ -66,85 +66,78 @@ void Events::processEvent(SDL_Event _event)
 {
 	switch (_event.type) {
 	case SDL_KEYDOWN:
-		if (m_event.key.repeat == 0) {
-			if (!vectorContains(m_keysHeld, m_event.key.keysym.sym)) {
-				m_keysHeld.push_back(m_event.key.keysym.sym);
+		if (_event.key.repeat == 0) {
+			if (!vectorContains(m_keysHeld, _event.key.keysym.sym)) {
+				m_keysHeld.push_back(_event.key.keysym.sym);
 			}
-			if (!vectorContains(m_keysDown, m_event.key.keysym.sym)) {
-				m_keysDown.push_back(m_event.key.keysym.sym);
+			if (!vectorContains(m_keysDown, _event.key.keysym.sym)) {
+				m_keysDown.push_back(_event.key.keysym.sym);
 			}
 		}
 		break;
 	case SDL_KEYUP:
-		if (m_event.key.repeat == 0) {
+		if (_event.key.repeat == 0) {
 			for (int i = 0; i < m_keysHeld.size(); ++i) {
-				if (m_keysHeld[i] == m_event.key.keysym.sym) {
+				if (m_keysHeld[i] == _event.key.keysym.sym) {
 					m_keysHeld.erase(m_keysHeld.begin() + i);
 				}
 			}
-			if (!vectorContains(m_keysUp, m_event.key.keysym.sym)) {
-				m_keysUp.push_back(m_event.key.keysym.sym);
+			if (!vectorContains(m_keysUp, _event.key.keysym.sym)) {
+				m_keysUp.push_back(_event.key.keysym.sym);
 			}
 		}
 		break;
 	case SDL_MOUSEBUTTONDOWN:
-		if (!vectorContains(m_mouseHeld, m_event.button.button)) {
-			m_mouseHeld.push_back(m_event.button.button);
+		if (!vectorContains(m_mouseHeld, _event.button.button)) {
+			m_mouseHeld.push_back(_event.button.button);
 		}
-		if (!vectorContains(m_mouseDown, m_event.button.button)) {
-			m_mouseDown.push_back(m_event.button.button);
+		if (!vectorContains(m_mouseDown, _event.button.button)) {
+			m_mouseDown.push_back(_event.button.button);
 		}
 		break;
 	case SDL_MOUSEBUTTONUP:
 		for (int i = 0; i < m_mouseHeld.size(); ++i) {
-			if (m_mouseHeld[i] == m_event.button.button) {
+			if (m_mouseHeld[i] == _event.button.button) {
 				m_mouseHeld.erase(m_mouseHeld.begin() + i);
 			}
 		}
-		if (!vectorContains(m_mouseUp, m_event.button.button)) {
-			m_mouseUp.push_back(m_event.button.button);
+		if (!vectorContains(m_mouseUp, _event.button.button)) {
+			m_mouseUp.push_back(_event.button.button);
 		}
 		break;
 	case SDL_CONTROLLERBUTTONDOWN:
-		printf("JoyButton: %u\n", m_event.jbutton.button);
-		if (!vectorContains(m_buttonHeld, m_event.jbutton.button)) {
-			m_buttonHeld.push_back(m_event.jbutton.button);
+		printf("JoyButton: %u\n", _event.jbutton.button);
+		if (!vectorContains(m_buttonHeld, _event.jbutton.button)) {
+			m_buttonHeld.push_back(_event.jbutton.button);
 		}
-		if (!vectorContains(m_buttonDown, m_event.jbutton.button)) {
-			m_buttonDown.push_back(m_event.jbutton.button);
+		if (!vectorContains(m_buttonDown, _event.jbutton.button)) {
+			m_buttonDown.push_back(_event.jbutton.button);
 		}
 		break;
 	case SDL_CONTROLLERBUTTONUP:
 		for (int i = 0; i < m_buttonHeld.size(); ++i) {
-			if (m_buttonHeld[i] == m_event.jbutton.button) {
+			if (m_buttonHeld[i] == _event.jbutton.button) {
 				m_buttonHeld.erase(m_buttonHeld.begin() + i);
 			}
 		}
-		if (!vectorContains(m_buttonUp, m_event.jbutton.button)) {
-			m_buttonUp.push_back(m_event.jbutton.button);
+		if (!vectorContains(m_buttonUp, _event.jbutton.button)) {
+			m_buttonUp.push_back(_event.jbutton.button);
 		}
 		break;
 
 	case SDL_CONTROLLERAXISMOTION:
-		m_controllerAxes[m_event.jaxis.axis] = ((float)m_event.jaxis.value) / (((float)m_event.jaxis.value) > 0 ? 32767.f : 32768.f);
+		m_controllerAxes[_event.jaxis.axis] = ((float)_event.jaxis.value) / (((float)_event.jaxis.value) > 0 ? 32767.f : 32768.f);
 		break;
 	case SDL_MOUSEMOTION:
-		m_mousePosition[0] = m_event.motion.x;
-		m_mousePosition[1] = m_event.motion.y;
-		m_mouseDelta[1] = m_event.motion.yrel;
-		m_mouseDelta[0] = m_event.motion.xrel;
+		m_mousePosition[0] = _event.motion.x;
+		m_mousePosition[1] = _event.motion.y;
+		m_mouseDelta[1] = _event.motion.yrel;
+		m_mouseDelta[0] = _event.motion.xrel;
 		break;
 	case SDL_MOUSEWHEEL:
-		m_mouseWUp = m_event.wheel.y > 0;
-		m_mouseWDown = m_event.wheel.y < 0;
+		m_mouseWUp = _event.wheel.y > 0;
+		m_mouseWDown = _event.wheel.y < 0;
 		break;
-	}
-}
-
-void Events::update() {
-	
-	while (SDL_PollEvent(&m_event)) {
-		
 	}
 }
 
