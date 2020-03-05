@@ -3,11 +3,11 @@
 #include "IBehaviour.h"
 #include "Net.h"
 
-class PaddleBehaviour : public IBehaviour
+class RemotePaddleBehaviour : public IBehaviour
 {
 public:
-	PaddleBehaviour(bool server, sockaddr* addrinfo, int namelen);
-	~PaddleBehaviour();
+	RemotePaddleBehaviour(bool server, sockaddr* addrinfo, int namelen);
+	~RemotePaddleBehaviour();
 
 	void init() override;
 	void update() override;
@@ -17,4 +17,3 @@ private:
 	sockaddr* m_addrinfo;
 	int m_namelen;
 };
-

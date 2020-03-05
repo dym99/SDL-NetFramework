@@ -1,3 +1,6 @@
+//Dylan Moore - 100662175
+//Sydney Caldwell - 100652057
+
 #include <SDL2/SDL.h>
 
 #include "Window.h"
@@ -6,6 +9,7 @@
 #include "Scene.h"
 #include "Time.h"
 #include "PaddleBehaviour.h"
+#include "RemotePaddleBehaviour.h"
 
 #include "Net.h"
 
@@ -15,6 +19,9 @@ static bool serve = false;
 static std::string serverAddr, serverPort;
 
 static unsigned short bindPort;
+static int client = INVALID_SOCKET;
+static struct sockaddr* clientAddr;
+static int clientnamelen;
 
 static struct addrinfo* addrinfoptr = NULL, hints;
 
@@ -53,6 +60,7 @@ int main(int argc, char *argv[]) {
 	Texture background("res/Backgrounds/Background_Hockey.png");
 	Texture ball("res/Balls/Puck.png");
 	Texture paddle("res/Paddles/Paddle_AH.png");
+	Texture paddle2("res/Paddles/Paddle_AH_Blue.png");
 	
 
 	Sprite backgroundSprite(&background, { 0,0 }, { 1300,720 });
@@ -61,16 +69,18 @@ int main(int argc, char *argv[]) {
 	Sprite ballSprite(&ball, { 32, 32 }, { 32, 32 });
 
 	Sprite paddleSprite1(&paddle, { 40, 100 }, { 48, 48 });
+	paddleSprite1.setZOrder(-2.0f);
+
+	Sprite paddleSprite2(&paddle2, { 1240, 100 }, { 48, 48 });
 	paddleSprite1.setZOrder(-1.0f);
 
-	PaddleBehaviour pBehaviour = PaddleBehaviour(200.f);
-	paddleSprite1.addBehaviour(&pBehaviour);
 
 	//Scenes here
 	Scene testScene;
 	testScene.addSprite(&backgroundSprite);
 	testScene.addSprite(&ballSprite);
 	testScene.addSprite(&paddleSprite1);
+	testScene.addSprite(&paddleSprite2);
 
 	Scene* currentScene = &testScene;
 
@@ -85,8 +95,31 @@ int main(int argc, char *argv[]) {
 		Net::listenTCP();
 
 		Net::bindUDP(bindPort);
+
+		printf("Awaiting connection... ");
+		client = Net::acceptTCP(NULL, NULL);
+		if (client == INVALID_SOCKET) {
+			printf("Accept failed! WSAError: %ld\n", WSAGetLastError());
+
+			//Clean up
+			Net::closeTCPSocket();
+			Net::closeUDPSocket();
+			
+			if (!serve) {
+				freeaddrinfo(addrinfoptr);
+			}
+
+			Net::cleanup();
+			SDL_Quit();
+			return 1;
+		}
+		else {
+			printf("Found!\n");
+			getpeername(client, clientAddr, &clientnamelen);
+		}
 	}
 	else {
+		Net::bindUDP(0);
 		//Get the server address and connect.
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_family = AF_INET;
@@ -99,6 +132,20 @@ int main(int argc, char *argv[]) {
 		else {
 			Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
 		}
+	}
+	if (serve) {
+		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, clientAddr, clientnamelen);
+		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, clientAddr, clientnamelen);
+
+		paddleSprite1.addBehaviour(&pBehaviour);
+		paddleSprite2.addBehaviour(&pBehaviourRemote);
+	}
+	else {
+		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
+		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
+
+		paddleSprite1.addBehaviour(&pBehaviour);
+		paddleSprite2.addBehaviour(&pBehaviourRemote);
 	}
 
 	//Run application

@@ -25,7 +25,7 @@ public:
 	//TCP proto stuff
 	static bool listenTCP();
 	static bool connectTCP(const sockaddr* addrinfo, int namelen);
-	static int acceptTCP();
+	static int acceptTCP(sockaddr* addr, int* namelen);
 	static bool sendTCP(std::string data);
 	static bool sendTCP(int destination, std::string data);
 	static std::string recvTCP();

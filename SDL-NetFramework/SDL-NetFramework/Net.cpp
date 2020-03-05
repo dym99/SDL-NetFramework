@@ -112,13 +112,13 @@ bool Net::connectTCP(const sockaddr* addrinfo, int namelen)
 	return true;
 }
 
-int Net::acceptTCP()
+int Net::acceptTCP(sockaddr* addr, int* namelen)
 {
 	if (!m_TCPOpen) {
 		DEBUG_LOG("TCP socket is not open!\n");
 		return false;
 	}
-	return accept(m_TCPSock, NULL, NULL);
+	return accept(m_TCPSock, addr, namelen);
 }
 
 bool Net::sendTCP(std::string data)
@@ -215,7 +215,7 @@ bool Net::sendToUDP(const sockaddr* destination, int namelen, std::string data)
 		return false;
 	}
 	else {
-		DEBUG_LOG("[UDP] Send: %s", data.c_str());
+		DEBUG_LOG("[UDP] Send: %s\n", data.c_str());
 	}
 	return true;
 }
@@ -237,10 +237,10 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 	buf[NET_BUFFER_LEN - 1] = '\0';
 
 	if (bytes == 0) {
-		DEBUG_LOG("UDP recv failed! WSAError: %ld", WSAGetLastError());
+		DEBUG_LOG("UDP recv failed! WSAError: %ld\n", WSAGetLastError());
 	}
 	else {
-		DEBUG_LOG("[UDP] Recv: %s", buf);
+		DEBUG_LOG("[UDP] Recv: %s\n", buf);
 	}
 
 	return std::string(buf);

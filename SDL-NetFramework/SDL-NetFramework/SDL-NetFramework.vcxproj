@@ -89,6 +89,7 @@
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RemotePaddleBehaviour.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Text.cpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="IBehaviour.h" />
     <ClInclude Include="Net.h" />
     <ClInclude Include="PaddleBehaviour.h" />
+    <ClInclude Include="RemotePaddleBehaviour.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Physics.h" />

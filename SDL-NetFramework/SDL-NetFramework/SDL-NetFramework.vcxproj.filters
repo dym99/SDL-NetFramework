@@ -77,6 +77,9 @@
     <ClCompile Include="Text.cpp">
       <Filter>Source Files\Text</Filter>
     </ClCompile>
+    <ClCompile Include="RemotePaddleBehaviour.cpp">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -114,6 +117,9 @@
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Source Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="RemotePaddleBehaviour.h">
+      <Filter>Source Files\Behaviours</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
