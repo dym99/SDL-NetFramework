@@ -131,6 +131,9 @@ bool Net::sendTCP(std::string data)
 		DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
 		return false;
 	}
+	else {
+		DEBUG_LOG("[TCP] Send: %s", data.c_str());
+	}
 	return true;
 }
 
@@ -143,6 +146,9 @@ bool Net::sendTCP(int destination, std::string data)
 	if (send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL) == SOCKET_ERROR) {
 		DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
 		return false;
+	}
+	else {
+		DEBUG_LOG("[TCP] Send: %s", data.c_str());
 	}
 	return true;
 }
@@ -160,12 +166,16 @@ std::string Net::recvTCP()
 	//Recieve
 	int bytes = recv(m_TCPSock, buf, NET_BUFFER_LEN, NULL);
 
+	//Null terminate, just in case.
+	buf[NET_BUFFER_LEN - 1] = '\0';
+
 	if (bytes == 0) {
 		DEBUG_LOG("TCP recv failed! WSAError: %ld", WSAGetLastError());
 	}
+	else {
+		DEBUG_LOG("[TCP] Recv: %s", buf);
+	}
 
-	//Null terminate, just in case.
-	buf[NET_BUFFER_LEN - 1] = '\0';
 	return std::string(buf);
 }
 
@@ -185,6 +195,9 @@ std::string Net::recvTCP(int from)
 	if (bytes == 0) {
 		DEBUG_LOG("TCP recv failed! WSAError: %ld", WSAGetLastError());
 	}
+	else {
+		DEBUG_LOG("[TCP] Recv: %s", buf);
+	}
 
 	//Null-terminate, just in case.
 	buf[NET_BUFFER_LEN - 1] = '\0';
@@ -200,6 +213,9 @@ bool Net::sendToUDP(const sockaddr* destination, int namelen, std::string data)
 	if (sendto(m_UDPSock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen) == SOCKET_ERROR) {
 		DEBUG_LOG("UDP sendto failed! WSAError: %ld\n", WSAGetLastError());
 		return false;
+	}
+	else {
+		DEBUG_LOG("[UDP] Send: %s", data.c_str());
 	}
 	return true;
 }
@@ -217,12 +233,16 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 	//Recieve
 	int bytes = recvfrom(m_UDPSock, buf, NET_BUFFER_LEN, NULL, from, fromlen);
 
+	//Null-terminate, just in case.
+	buf[NET_BUFFER_LEN - 1] = '\0';
+
 	if (bytes == 0) {
 		DEBUG_LOG("UDP recv failed! WSAError: %ld", WSAGetLastError());
 	}
+	else {
+		DEBUG_LOG("[UDP] Recv: %s", buf);
+	}
 
-	//Null-terminate, just in case.
-	buf[NET_BUFFER_LEN - 1] = '\0';
 	return std::string(buf);
 }
 

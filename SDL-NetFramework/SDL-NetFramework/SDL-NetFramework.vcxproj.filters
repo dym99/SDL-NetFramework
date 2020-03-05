@@ -36,6 +36,9 @@
     <Filter Include="Source Files\Net">
       <UniqueIdentifier>{0c7a3010-4d9c-455d-98b6-ee25551de178}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Text">
+      <UniqueIdentifier>{5b8ddd65-ba7c-4a3f-88ee-7b163b6b3602}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -71,6 +74,9 @@
     <ClCompile Include="Net.cpp">
       <Filter>Source Files\Net</Filter>
     </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -105,6 +111,9 @@
     </ClInclude>
     <ClInclude Include="Net.h">
       <Filter>Source Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Source Files\Text</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
