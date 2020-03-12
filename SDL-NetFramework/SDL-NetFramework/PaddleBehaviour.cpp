@@ -69,7 +69,6 @@ void PaddleBehaviour::update()
 		//Bounce
 		glm::vec2 dir = glm::vec2();
 		dir = puckpos - position;
-
 		std::stringstream puckMessage;
 		puckMessage << "[puck]" << puckpos.x << "," << puckpos.y << "," << dir.x << "," << dir.y;
 		if (m_server) {

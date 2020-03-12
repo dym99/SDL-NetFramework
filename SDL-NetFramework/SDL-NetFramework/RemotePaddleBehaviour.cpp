@@ -44,6 +44,14 @@ void RemotePaddleBehaviour::update()
 			glm::vec2 direction = {};
 
 			sscanf_s(message.c_str(), "[puck]%f,%f,%f,%f", &position.x, &position.y, &direction.x, &direction.y);
+
+
+			position.x = 1280 - position.x;
+			position.y = 720 - position.y;
+			direction.x *= -1;
+			direction.y *= -1;
+
+
 			m_puck->getBehaviour<PuckBehaviour>()->hit(position, direction);
 		}
 		else {
