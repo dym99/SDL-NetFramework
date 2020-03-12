@@ -3,7 +3,6 @@
 #include "IBehaviour.h"
 #include "Net.h"
 
-#include <glm/glm.hpp>
 
 class RemotePaddleBehaviour : public IBehaviour
 {
@@ -18,5 +17,4 @@ private:
 	sockaddr* m_addrinfo;
 	int m_namelen;
 	Sprite* m_puck;
-	glm::vec2 m_lastPos;
 };

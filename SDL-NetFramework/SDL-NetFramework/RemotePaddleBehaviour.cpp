@@ -13,7 +13,6 @@ RemotePaddleBehaviour::RemotePaddleBehaviour(bool server, sockaddr* addrinfo, in
 	m_addrinfo = addrinfo;
 	m_namelen = namelen;
 	m_puck = puck;
-	m_lastPos = getSprite()->getPosition();
 }
 
 RemotePaddleBehaviour::~RemotePaddleBehaviour()
