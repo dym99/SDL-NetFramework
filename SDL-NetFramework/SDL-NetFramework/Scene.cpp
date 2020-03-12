@@ -9,6 +9,13 @@ Scene::~Scene()
 {
 }
 
+void Scene::init()
+{
+	for (size_t i = 0; i < m_sprites.size(); ++i) {
+		m_sprites[i]->init();
+	}
+}
+
 void Scene::update()
 {
 	for (size_t i = 0; i < m_sprites.size(); ++i) {

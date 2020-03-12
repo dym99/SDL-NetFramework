@@ -9,6 +9,8 @@ public:
 	Scene();
 	virtual ~Scene();
 
+	virtual void init();
+
 	virtual void update();
 
 	virtual void render();
