@@ -20,6 +20,7 @@ PaddleBehaviour::PaddleBehaviour(bool server, sockaddr* addrinfo, int namelen, S
 	m_addrinfo = addrinfo;
 	m_namelen = namelen;
 	m_puck = puck;
+	m_lastPos = getSprite()->getPosition();
 }
 
 PaddleBehaviour::~PaddleBehaviour()
@@ -33,34 +34,26 @@ void PaddleBehaviour::init()
 
 void PaddleBehaviour::update()
 {
-	//float direction = 0.0f;
-	//if (EVENTS->isKeyHeld(SDLK_UP)) {
-	//	direction -= 1.0f;
-	//}
-	//if (EVENTS->isKeyHeld(SDLK_DOWN)) {
-	//	direction += 1.0f;
-	//}
-	//
-	//glm::vec2 position = getSprite()->getPosition();
-	//position.y += (direction * m_speed * Time::deltaTime);
 
 	int x, y;
 	EVENTS->getMousePosition(&x, &y);
 	glm::vec2 position = { (float)x, (float)y };
 	
 
-		std::stringstream message;
-		message << "[paddle]" << position.x << "," << position.y;
-		if (m_server) {
-			Net::sendToUDP(m_addrinfo, m_namelen, message.str());
-		}
-		else {
-			Net::sendToUDP(m_addrinfo, m_namelen, message.str());
-		}
-		
-		//std::string message = Net::recvFromUDP(m_addrinfo, &m_namelen);
-		//glm::vec2 position;
-		//sscanf(message.c_str(), "%f,%f", &position.x, &position.y);
+	std::stringstream message;
+	message << "[paddle]" << position.x << "," << position.y;
+	if (m_server) {
+		Net::sendToUDP(m_addrinfo, m_namelen, message.str());
+	}
+	else {
+		Net::sendToUDP(m_addrinfo, m_namelen, message.str());
+	}
+	
+	//std::string message = Net::recvFromUDP(m_addrinfo, &m_namelen);
+	//glm::vec2 position;
+	//sscanf(message.c_str(), "%f,%f", &position.x, &position.y);
+	
+	m_lastPos = getSprite()->getPosition() + (getSprite()->getDimensions() * 0.5f);
 
 	getSprite()->setPosition((position - getSprite()->getDimensions() * 0.5f));
 
@@ -68,7 +61,7 @@ void PaddleBehaviour::update()
 	if (Physics::CollisionCircleCircle(position, 24.0f, puckpos, 16.0f)) {
 		//Bounce
 		glm::vec2 dir = glm::vec2();
-		dir = puckpos - position;
+		dir = glm::normalize(puckpos - position) * glm::distance(position, m_lastPos);
 		std::stringstream puckMessage;
 		puckMessage << "[puck]" << puckpos.x << "," << puckpos.y << "," << dir.x << "," << dir.y;
 		if (m_server) {

@@ -51,10 +51,10 @@ void PuckBehaviour::update()
 	getSprite()->setPosition(pos);
 }
 
-void PuckBehaviour::hit(glm::vec2 _pos, glm::vec2 _dir)
+void PuckBehaviour::hit(glm::vec2 _pos, glm::vec2 _vel)
 {
 	glm::vec2 pos = _pos;
 	
 	getSprite()->setPosition(pos - (getSprite()->getDimensions()*0.5f));
-	m_vel = glm::normalize(_dir) * SPEED;
+	m_vel = _vel;
 }

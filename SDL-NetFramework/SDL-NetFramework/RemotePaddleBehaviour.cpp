@@ -13,6 +13,7 @@ RemotePaddleBehaviour::RemotePaddleBehaviour(bool server, sockaddr* addrinfo, in
 	m_addrinfo = addrinfo;
 	m_namelen = namelen;
 	m_puck = puck;
+	m_lastPos = getSprite()->getPosition();
 }
 
 RemotePaddleBehaviour::~RemotePaddleBehaviour()
@@ -41,16 +42,16 @@ void RemotePaddleBehaviour::update()
 			message[5] == ']') {
 			//Puck message
 			glm::vec2 position = {};
-			glm::vec2 direction = {};
+			glm::vec2 velocity = {};
 
-			sscanf_s(message.c_str(), "[puck]%f,%f,%f,%f", &position.x, &position.y, &direction.x, &direction.y);
+			sscanf_s(message.c_str(), "[puck]%f,%f,%f,%f", &position.x, &position.y, &velocity.x, &velocity.y);
 
 			position.x = 1280 - position.x;
 			position.y = 720 - position.y;
-			direction.x *= -1;
-			direction.y *= -1;
+			velocity.x *= -1;
+			velocity.y *= -1;
 
-			m_puck->getBehaviour<PuckBehaviour>()->hit(position, direction);
+			m_puck->getBehaviour<PuckBehaviour>()->hit(position, velocity);
 		}
 		else {
 			//Paddle message
