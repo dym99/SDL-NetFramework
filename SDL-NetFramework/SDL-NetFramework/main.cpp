@@ -10,6 +10,7 @@
 #include "Time.h"
 #include "PaddleBehaviour.h"
 #include "RemotePaddleBehaviour.h"
+#include "PuckBehaviour.h"
 
 #include "Net.h"
 
@@ -58,7 +59,7 @@ int main(int argc, char *argv[]) {
 	
 	//Load resources here
 	Texture background("res/Backgrounds/Background_Hockey.png");
-	Texture ball("res/Balls/Puck.png");
+	Texture puck("res/Balls/Puck.png");
 	Texture paddle("res/Paddles/Paddle_AH.png");
 	Texture paddle2("res/Paddles/Paddle_AH_Blue.png");
 	
@@ -66,7 +67,9 @@ int main(int argc, char *argv[]) {
 	Sprite backgroundSprite(&background, { 0,0 }, { 1300,720 });
 	backgroundSprite.setZOrder(1000.0f);
 
-	Sprite ballSprite(&ball, { 32, 32 }, { 32, 32 });
+	Sprite puckSprite(&puck, { 32, 32 }, { 32, 32 });
+	PuckBehaviour puckBehaviour = PuckBehaviour();
+	puckSprite.addBehaviour(&puckBehaviour);
 
 	Sprite paddleSprite1(&paddle, { 40, 100 }, { 48, 48 });
 	paddleSprite1.setZOrder(-2.0f);
@@ -78,7 +81,7 @@ int main(int argc, char *argv[]) {
 	//Scenes here
 	Scene testScene;
 	testScene.addSprite(&backgroundSprite);
-	testScene.addSprite(&ballSprite);
+	testScene.addSprite(&puckSprite);
 	testScene.addSprite(&paddleSprite1);
 	testScene.addSprite(&paddleSprite2);
 
@@ -136,15 +139,15 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if (serve) {
-		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &ballSprite);
-		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &ballSprite);
+		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
+		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
 
 		paddleSprite1.addBehaviour(&pBehaviour);
 		paddleSprite2.addBehaviour(&pBehaviourRemote);
 	}
 	else {
-		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &ballSprite);
-		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &ballSprite);
+		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
+		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
 
 		paddleSprite1.addBehaviour(&pBehaviour);
 		paddleSprite2.addBehaviour(&pBehaviourRemote);
