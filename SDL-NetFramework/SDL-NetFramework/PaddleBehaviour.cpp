@@ -65,7 +65,7 @@ void PaddleBehaviour::update()
 	getSprite()->setPosition((position - getSprite()->getDimensions() * 0.5f));
 
 	glm::vec2 puckpos = m_puck->getPosition() + m_puck->getDimensions() * 0.5f;
-	if (Physics::CollisionCircleCircle(position, 48.0f, puckpos, 16.0f)) {
+	if (Physics::CollisionCircleCircle(position, 24.0f, puckpos, 16.0f)) {
 		//Bounce
 		glm::vec2 dir = glm::vec2();
 		dir = puckpos - position;

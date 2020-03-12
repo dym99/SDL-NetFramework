@@ -21,6 +21,7 @@ void PuckBehaviour::init()
 		pos.x = 1280 - pos.x;
 		pos.y = 720 - pos.y;
 	}
+	getSprite()->setPosition(pos);
 }
 
 void PuckBehaviour::update()
@@ -35,14 +36,14 @@ void PuckBehaviour::update()
 		if (pos.x < 0)
 			pos.x *= -1;
 		else
-			pos.y -= pos.y - 1280.0f;
+			pos.x -= (pos.x + getSprite()->getDimensions().x) - 1280.0f;
 		m_vel.x *= -1;
 	}
 	if (pos.y < 0 || (pos.y + getSprite()->getDimensions().y) > 720.0f) {
 		if (pos.y < 0)
 			pos.y *= -1;
 		else
-			pos.y -= pos.y - 720.0f;
+			pos.y -= (pos.y+getSprite()->getDimensions().y) - 720.0f;
 		m_vel.y *= -1;
 	}
 
