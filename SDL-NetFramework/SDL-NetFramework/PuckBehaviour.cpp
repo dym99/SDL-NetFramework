@@ -31,12 +31,18 @@ void PuckBehaviour::update()
 	pos += m_vel * Time::deltaTime;
 
 	//Bounce off of sides
-	if (pos.x < 0 || (pos.x + getSprite()->getDimensions().x) > 1280) {
-		pos.x *= -1;
+	if (pos.x < 0 || (pos.x + getSprite()->getDimensions().x) > 1280.0f) {
+		if (pos.x < 0)
+			pos.x *= -1;
+		else
+			pos.y -= pos.y - 1280.0f;
 		m_vel.x *= -1;
 	}
-	if (pos.y < 0 || (pos.y + getSprite()->getDimensions().y) > 720) {
-		pos.y *= -1;
+	if (pos.y < 0 || (pos.y + getSprite()->getDimensions().y) > 720.0f) {
+		if (pos.y < 0)
+			pos.y *= -1;
+		else
+			pos.y -= pos.y - 720.0f;
 		m_vel.y *= -1;
 	}
 
@@ -51,6 +57,9 @@ void PuckBehaviour::hit(glm::vec2 _pos, glm::vec2 _dir)
 	if (!m_server) {
 		pos.x = 1280 - pos.x;
 		pos.y = 720 - pos.y;
+
+		_dir.x *= -1;
+		_dir.y *= -1;
 	}
 	getSprite()->setPosition(pos - (getSprite()->getDimensions()*0.5f));
 	m_vel = glm::normalize(_dir) * SPEED;
