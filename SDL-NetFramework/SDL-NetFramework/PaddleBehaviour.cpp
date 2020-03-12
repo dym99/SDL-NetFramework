@@ -42,7 +42,6 @@ void PaddleBehaviour::update()
 	int x, y;
 	EVENTS->getMousePosition(&x, &y);
 	glm::vec2 position = { (float)x, (float)y };
-	getSprite()->setPosition((position-getSprite()->getDimensions()*0.5f));
 	
 
 		std::stringstream message;
@@ -57,5 +56,7 @@ void PaddleBehaviour::update()
 		//std::string message = Net::recvFromUDP(m_addrinfo, &m_namelen);
 		//glm::vec2 position;
 		//sscanf(message.c_str(), "%f,%f", &position.x, &position.y);
+
+	getSprite()->setPosition((position - getSprite()->getDimensions() * 0.5f));
 	
 }
