@@ -122,7 +122,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	else {
-		Net::bindUDP(0);
 		//Get the server address and connect.
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_family = AF_INET;
@@ -181,6 +180,8 @@ int main(int argc, char *argv[]) {
 		currentScene->render();
 
 		Window::present();
+
+		SDL_Delay(10);
 	}
 
 	//Clean up
