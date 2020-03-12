@@ -18,6 +18,10 @@ public:
 	static bool startUDPSocket();
 	static bool startTCPSocket();
 
+	//Socket getters
+	static SOCKET getUDPSocket();
+	static SOCKET getTCPSocket();
+
 	//Socket binding
 	static bool bindUDP(unsigned short port);
 	static bool bindTCP(unsigned short port);

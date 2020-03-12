@@ -34,6 +34,14 @@ bool Net::startUDPSocket()
 		return false;
 	}
 	m_UDPOpen = true;
+
+	unsigned long iMode = 1;
+	int iResult = ioctlsocket(m_UDPSock, FIONBIO, &iMode);
+	if (iResult != NO_ERROR)
+		printf("ioctlsocket failed with error: %ld\n", iResult);
+
+
+
 	return true;
 }
 
@@ -48,6 +56,16 @@ bool Net::startTCPSocket()
 	}
 	m_TCPOpen = true;
 	return true;
+}
+
+SOCKET Net::getUDPSocket()
+{
+	return m_UDPSock;
+}
+
+SOCKET Net::getTCPSocket()
+{
+	return m_TCPSock;
 }
 
 bool Net::bindUDP(unsigned short port)

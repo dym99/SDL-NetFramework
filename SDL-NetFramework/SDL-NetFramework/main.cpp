@@ -20,8 +20,8 @@ static std::string serverAddr, serverPort;
 
 static unsigned short bindPort;
 static int client = INVALID_SOCKET;
-static struct sockaddr* clientAddr;
-static int clientnamelen;
+static struct sockaddr_in clientAddr = {};
+static int clientnamelen = sizeof(sockaddr);
 
 static struct addrinfo* addrinfoptr = NULL, hints;
 
@@ -115,7 +115,10 @@ int main(int argc, char *argv[]) {
 		}
 		else {
 			printf("Found!\n");
-			getpeername(client, clientAddr, &clientnamelen);
+			if (getpeername(client, (sockaddr*)&clientAddr, &clientnamelen) == SOCKET_ERROR) {
+				DEBUG_LOG("getpeername failed! WSAError: %ld\n", WSAGetLastError());
+				system("pause");
+			}
 		}
 	}
 	else {
@@ -134,8 +137,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if (serve) {
-		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, clientAddr, clientnamelen);
-		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, clientAddr, clientnamelen);
+		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen);
+		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen);
 
 		paddleSprite1.addBehaviour(&pBehaviour);
 		paddleSprite2.addBehaviour(&pBehaviourRemote);
