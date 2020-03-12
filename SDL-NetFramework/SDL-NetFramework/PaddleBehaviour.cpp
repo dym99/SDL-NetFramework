@@ -20,7 +20,8 @@ PaddleBehaviour::PaddleBehaviour(bool server, sockaddr* addrinfo, int namelen, S
 	m_addrinfo = addrinfo;
 	m_namelen = namelen;
 	m_puck = puck;
-	m_lastPos = getSprite()->getPosition();
+	m_lastPos = glm::vec2();
+	m_speed = 0;
 }
 
 PaddleBehaviour::~PaddleBehaviour()
@@ -57,11 +58,13 @@ void PaddleBehaviour::update()
 
 	getSprite()->setPosition((position - getSprite()->getDimensions() * 0.5f));
 
+	m_speed = glm::distance(m_lastPos, position)/Time::deltaTime;
+
 	glm::vec2 puckpos = m_puck->getPosition() + m_puck->getDimensions() * 0.5f;
 	if (Physics::CollisionCircleCircle(position, 24.0f, puckpos, 16.0f)) {
 		//Bounce
 		glm::vec2 dir = glm::vec2();
-		dir = glm::normalize(puckpos - position) * glm::distance(position, m_lastPos);
+		dir = glm::normalize(puckpos - position) * m_speed;
 		std::stringstream puckMessage;
 		puckMessage << "[puck]" << puckpos.x << "," << puckpos.y << "," << dir.x << "," << dir.y;
 		if (m_server) {

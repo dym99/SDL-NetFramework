@@ -20,5 +20,6 @@ private:
 	int m_namelen;
 	Sprite* m_puck;
 	glm::vec2 m_lastPos;
+	float m_speed;
 };
 
