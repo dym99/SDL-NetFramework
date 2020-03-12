@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
 	//Run application
 	SDL_Event event;
 
-	currentScene.init();
+	currentScene->init();
 
 	while (Window::isOpen()) {
 		//Calculate delta time
