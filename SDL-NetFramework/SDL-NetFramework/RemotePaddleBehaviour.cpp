@@ -45,12 +45,10 @@ void RemotePaddleBehaviour::update()
 
 			sscanf_s(message.c_str(), "[puck]%f,%f,%f,%f", &position.x, &position.y, &direction.x, &direction.y);
 
-			if (m_server) {
-				position.x = 1280 - position.x;
-				position.y = 720 - position.y;
-				direction.x *= -1;
-				direction.y *= -1;
-			}
+			position.x = 1280 - position.x;
+			position.y = 720 - position.y;
+			direction.x *= -1;
+			direction.y *= -1;
 
 			m_puck->getBehaviour<PuckBehaviour>()->hit(position, direction);
 		}
@@ -58,6 +56,8 @@ void RemotePaddleBehaviour::update()
 			//Paddle message
 			glm::vec2 position = {};
 			sscanf_s(message.c_str(), "[paddle]%f,%f", &position.x, &position.y);
+			position += getSprite()->getDimensions() * 0.5f;
+
 			position.x = 1280 - position.x;
 			position.y = 720 - position.y;
 
