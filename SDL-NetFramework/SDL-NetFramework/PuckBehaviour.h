@@ -5,7 +5,7 @@
 
 class PuckBehaviour : public IBehaviour {
 public:
-	PuckBehaviour();
+	PuckBehaviour(bool _server);
 	~PuckBehaviour();
 
 	void init() override;
@@ -16,5 +16,6 @@ public:
 	const float SPEED = 100.0f;
 private:
 	glm::vec2 m_vel;
+	bool m_server;
 };
 

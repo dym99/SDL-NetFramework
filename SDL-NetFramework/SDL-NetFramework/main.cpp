@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 	backgroundSprite.setZOrder(1000.0f);
 
 	Sprite puckSprite(&puck, { 32, 32 }, { 32, 32 });
-	PuckBehaviour puckBehaviour = PuckBehaviour();
+	PuckBehaviour puckBehaviour = PuckBehaviour(serve);
 	puckSprite.addBehaviour(&puckBehaviour);
 
 	Sprite paddleSprite1(&paddle, { 40, 100 }, { 48, 48 });

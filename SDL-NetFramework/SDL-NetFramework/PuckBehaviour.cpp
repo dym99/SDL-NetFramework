@@ -3,9 +3,10 @@
 #include "Sprite.h"
 #include "Time.h"
 
-PuckBehaviour::PuckBehaviour()
+PuckBehaviour::PuckBehaviour(bool _server)
 {
 	m_vel = glm::vec2();
+	m_server = _server;
 }
 
 PuckBehaviour::~PuckBehaviour()
@@ -34,11 +35,22 @@ void PuckBehaviour::update()
 	}
 
 	//Update position
+	//Flip for the client
+	if (!m_server) {
+		pos.x = 1280 - pos.x;
+		pos.y = 720 - pos.y;
+	}
 	getSprite()->setPosition(pos);
 }
 
 void PuckBehaviour::hit(glm::vec2 _pos, glm::vec2 _dir)
 {
-	getSprite()->setPosition(_pos - (getSprite()->getDimensions()*0.5f));
+	glm::vec2 pos = _pos;
+	//Flip for the client
+	if (!m_server) {
+		pos.x = 1280 - pos.x;
+		pos.y = 720 - pos.y;
+	}
+	getSprite()->setPosition(pos - (getSprite()->getDimensions()*0.5f));
 	m_vel = glm::normalize(_dir) * SPEED;
 }
