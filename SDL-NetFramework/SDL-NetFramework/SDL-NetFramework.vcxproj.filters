@@ -81,7 +81,7 @@
       <Filter>Source Files\Behaviours</Filter>
     </ClCompile>
     <ClCompile Include="PuckBehaviour.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Behaviours</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,7 +125,7 @@
       <Filter>Source Files\Behaviours</Filter>
     </ClInclude>
     <ClInclude Include="PuckBehaviour.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Behaviours</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

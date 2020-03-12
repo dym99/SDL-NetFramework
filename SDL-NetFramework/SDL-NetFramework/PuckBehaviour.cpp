@@ -15,6 +15,12 @@ PuckBehaviour::~PuckBehaviour()
 
 void PuckBehaviour::init()
 {
+	glm::vec2 pos = getSprite()->getPosition()+(getSprite()->getDimensions()*0.5f);
+	//Flip for the client
+	if (!m_server) {
+		pos.x = 1280 - pos.x;
+		pos.y = 720 - pos.y;
+	}
 }
 
 void PuckBehaviour::update()
@@ -35,11 +41,6 @@ void PuckBehaviour::update()
 	}
 
 	//Update position
-	//Flip for the client
-	if (!m_server) {
-		pos.x = 1280 - pos.x;
-		pos.y = 720 - pos.y;
-	}
 	getSprite()->setPosition(pos);
 }
 
