@@ -80,6 +80,9 @@
     <ClCompile Include="RemotePaddleBehaviour.cpp">
       <Filter>Source Files\Behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="PuckBehaviour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -120,6 +123,9 @@
     </ClInclude>
     <ClInclude Include="RemotePaddleBehaviour.h">
       <Filter>Source Files\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="PuckBehaviour.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

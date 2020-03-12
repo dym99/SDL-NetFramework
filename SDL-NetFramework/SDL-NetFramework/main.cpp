@@ -136,15 +136,15 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	if (serve) {
-		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen);
-		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen);
+		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &ballSprite);
+		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &ballSprite);
 
 		paddleSprite1.addBehaviour(&pBehaviour);
 		paddleSprite2.addBehaviour(&pBehaviourRemote);
 	}
 	else {
-		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
-		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
+		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &ballSprite);
+		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &ballSprite);
 
 		paddleSprite1.addBehaviour(&pBehaviour);
 		paddleSprite2.addBehaviour(&pBehaviourRemote);

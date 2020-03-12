@@ -32,6 +32,9 @@ public:
 
 	void addBehaviour(IBehaviour* _behaviour);
 
+	template<typename T>
+	T* getBehaviour();
+
 	void init();
 	void update();
 	void render();
@@ -46,3 +49,12 @@ private:
 	std::vector<IBehaviour*> m_behaviours;
 };
 
+template<typename T>
+inline T* Sprite::getBehaviour()
+{
+	for (int i = 0; i < m_behaviours.size(); ++i) {
+		T* temp;
+		temp = dynamic_cast<T*>(m_behaviours[i]);
+		return temp;
+	}
+}

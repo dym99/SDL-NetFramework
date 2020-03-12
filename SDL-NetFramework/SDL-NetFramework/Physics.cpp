@@ -12,3 +12,8 @@ bool Physics::CollisionBoxBox(const glm::vec2& _aPos, const glm::vec2& _aDim, co
 		((_aPos.y + _aDim.y) >= _bPos.y) &&
 		(_aPos.y <= (_bPos.y + _bDim.y)) );
 }
+
+bool Physics::CollisionCircleCircle(const glm::vec2& _posA, const float& _radiusA, const glm::vec2& _posB, const float& _radiusB)
+{
+	return (glm::distance(_posA, _posB) <= (_radiusA + _radiusB));
+}

@@ -6,15 +6,20 @@
 
 #include "Debug.h"
 
+#include "Physics.h"
+
 #include "Net.h"
+
+#include "PuckBehaviour.h"
 
 #include <sstream>
 
-PaddleBehaviour::PaddleBehaviour(bool server, sockaddr* addrinfo, int namelen)
+PaddleBehaviour::PaddleBehaviour(bool server, sockaddr* addrinfo, int namelen, Sprite* puck)
 {
 	m_server = server;
 	m_addrinfo = addrinfo;
 	m_namelen = namelen;
+	m_puck = puck;
 }
 
 PaddleBehaviour::~PaddleBehaviour()
@@ -45,7 +50,7 @@ void PaddleBehaviour::update()
 	
 
 		std::stringstream message;
-		message << position.x << "," << position.y;
+		message << "[paddle]" << position.x << "," << position.y;
 		if (m_server) {
 			Net::sendToUDP(m_addrinfo, m_namelen, message.str());
 		}
@@ -58,5 +63,23 @@ void PaddleBehaviour::update()
 		//sscanf(message.c_str(), "%f,%f", &position.x, &position.y);
 
 	getSprite()->setPosition((position - getSprite()->getDimensions() * 0.5f));
+
+	glm::vec2 puckpos = m_puck->getPosition() + m_puck->getDimensions() * 0.5f;
+	if (Physics::CollisionCircleCircle(position, 48.0f, puckpos, 16.0f)) {
+		//Bounce
+		glm::vec2 dir = glm::vec2();
+		dir = puckpos - position;
+
+		std::stringstream puckMessage;
+		puckMessage << "[puck]" << puckpos.x << "," << puckpos.y << "," << dir.x << "," << dir.y;
+		if (m_server) {
+			Net::sendToUDP(m_addrinfo, m_namelen, puckMessage.str());
+		}
+		else {
+			Net::sendToUDP(m_addrinfo, m_namelen, puckMessage.str());
+		}
+
+		m_puck->getBehaviour<PuckBehaviour>()->hit(puckpos, dir);
+	}
 	
 }
