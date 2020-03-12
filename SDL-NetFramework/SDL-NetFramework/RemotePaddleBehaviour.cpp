@@ -45,7 +45,7 @@ void RemotePaddleBehaviour::update()
 
 			sscanf_s(message.c_str(), "[puck]%f,%f,%f,%f", &position.x, &position.y, &direction.x, &direction.y);
 
-			if (!m_server) {
+			if (m_server) {
 				position.x = 1280 - position.x;
 				position.y = 720 - position.y;
 				direction.x *= -1;

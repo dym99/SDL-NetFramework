@@ -54,14 +54,7 @@ void PuckBehaviour::update()
 void PuckBehaviour::hit(glm::vec2 _pos, glm::vec2 _dir)
 {
 	glm::vec2 pos = _pos;
-	//Flip for the client
-	if (!m_server) {
-		pos.x = 1280 - pos.x;
-		pos.y = 720 - pos.y;
-
-		_dir.x *= -1;
-		_dir.y *= -1;
-	}
+	
 	getSprite()->setPosition(pos - (getSprite()->getDimensions()*0.5f));
 	m_vel = glm::normalize(_dir) * SPEED;
 }
