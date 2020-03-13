@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FakeLagBehaviour.cpp" />
     <ClCompile Include="IBehaviour.cpp" />
     <ClCompile Include="Net.cpp" />
     <ClCompile Include="PaddleBehaviour.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FakeLagBehaviour.h" />
     <ClInclude Include="IBehaviour.h" />
     <ClInclude Include="Net.h" />
     <ClInclude Include="PaddleBehaviour.h" />

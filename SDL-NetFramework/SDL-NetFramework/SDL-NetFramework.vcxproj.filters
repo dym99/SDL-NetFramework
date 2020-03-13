@@ -86,6 +86,9 @@
     <ClCompile Include="ScoreKeeper.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="FakeLagBehaviour.cpp">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -132,6 +135,9 @@
     </ClInclude>
     <ClInclude Include="ScoreKeeper.h">
       <Filter>Source Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="FakeLagBehaviour.h">
+      <Filter>Source Files\Behaviours</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

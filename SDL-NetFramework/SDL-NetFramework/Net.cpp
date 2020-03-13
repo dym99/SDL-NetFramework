@@ -8,10 +8,12 @@
 SOCKET Net::m_TCPSock = INVALID_SOCKET;
 SOCKET Net::m_UDPSock = INVALID_SOCKET;
 
+int Net::m_lagMilliseconds = 0;
 
 bool Net::m_TCPOpen = false;
 bool Net::m_UDPOpen = false;
 
+#include <thread>
 
 void Net::init()
 {
@@ -159,13 +161,18 @@ bool Net::sendTCP(std::string data)
 		DEBUG_LOG("TCP socket is not open!\n");
 		return false;
 	}
-	if (send(m_TCPSock, data.c_str(), data.size(), NULL) == SOCKET_ERROR) {
-		DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
-		return false;
-	}
-	else {
-		DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
-	}
+	//Execute send on a separate thread after a delay.
+	std::thread([&] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(m_lagMilliseconds));
+		send(m_TCPSock, data.c_str(), data.size(), NULL);
+		}).detach();
+	//if (send(m_TCPSock, data.c_str(), data.size(), NULL) == SOCKET_ERROR) {
+	//	DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
+	//	return false;
+	//}
+	//else {
+	//	DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
+	//}
 	return true;
 }
 
@@ -175,13 +182,18 @@ bool Net::sendTCP(int destination, std::string data)
 		DEBUG_LOG("TCP socket is not open!\n");
 		return false;
 	}
-	if (send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL) == SOCKET_ERROR) {
-		DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
-		return false;
-	}
-	else {
-		DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
-	}
+	//Execute send on a separate thread after a delay.
+	std::thread([&] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(m_lagMilliseconds));
+		send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL);
+		}).detach();
+	//if (send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL) == SOCKET_ERROR) {
+	//	DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
+	//	return false;
+	//}
+	//else {
+	//	DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
+	//}
 	return true;
 }
 
@@ -242,13 +254,18 @@ bool Net::sendToUDP(const sockaddr* destination, int namelen, std::string data)
 		DEBUG_LOG("UDP socket is not open!\n");
 		return false;
 	}
-	if (sendto(m_UDPSock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen) == SOCKET_ERROR) {
-		DEBUG_LOG("UDP sendto failed! WSAError: %ld\n", WSAGetLastError());
-		return false;
-	}
-	else {
-		//DEBUG_LOG("[UDP] Send: %s\n", data.c_str());
-	}
+	//Execute send on a separate thread after a delay.
+	std::thread([&] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(m_lagMilliseconds));
+		sendto(m_UDPSock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen);
+	}).detach();
+	//if (sendto(m_UDPSock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen) == SOCKET_ERROR) {
+	//	DEBUG_LOG("UDP sendto failed! WSAError: %ld\n", WSAGetLastError());
+	//	return false;
+	//}
+	//else {
+	//	//DEBUG_LOG("[UDP] Send: %s\n", data.c_str());
+	//}
 	return true;
 }
 
@@ -286,4 +303,15 @@ void Net::closeUDPSocket()
 void Net::closeTCPSocket()
 {
 	closesocket(m_TCPSock);
+}
+
+void Net::incLag()
+{
+	m_lagMilliseconds += 10;
+}
+
+void Net::decLag()
+{
+	m_lagMilliseconds -= 10;
+	if (m_lagMilliseconds < 0) m_lagMilliseconds = 0;
 }

@@ -46,11 +46,17 @@ public:
 	static void closeUDPSocket();
 	static void closeTCPSocket();
 
+	//Simulated lag
+	static void incLag();
+	static void decLag();
+
 private:
 	static SOCKET m_UDPSock;
 	static SOCKET m_TCPSock;
 
 	static bool m_UDPOpen;
 	static bool m_TCPOpen;
+
+	static int m_lagMilliseconds;
 };
 

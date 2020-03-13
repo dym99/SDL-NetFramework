@@ -14,6 +14,7 @@
 #include "RemotePaddleBehaviour.h"
 #include "PuckBehaviour.h"
 #include "ScoreKeeper.h"
+#include "FakeLagBehaviour.h"
 
 #include "Net.h"
 
@@ -168,6 +169,9 @@ int main(int argc, char *argv[]) {
 
 	PuckBehaviour puckBehaviour = PuckBehaviour(serve, client);
 	puckSprite.addBehaviour(&puckBehaviour);
+
+	FakeLagBehaviour flb = FakeLagBehaviour();
+	puckSprite.addBehaviour(&flb);
 
 	//Add the score keeper with networking info
 	ScoreKeeper sKeeper(Window::getRenderer(), { 640, 25 }, serve, client);
