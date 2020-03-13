@@ -92,6 +92,7 @@
     <ClCompile Include="PuckBehaviour.cpp" />
     <ClCompile Include="RemotePaddleBehaviour.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="ScoreKeeper.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="PaddleBehaviour.h" />
     <ClInclude Include="PuckBehaviour.h" />
     <ClInclude Include="RemotePaddleBehaviour.h" />
+    <ClInclude Include="ScoreKeeper.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Physics.h" />

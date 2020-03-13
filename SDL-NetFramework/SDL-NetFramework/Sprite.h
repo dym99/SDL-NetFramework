@@ -1,3 +1,6 @@
+//Dylan Moore - 100662175
+//Sydney Caldwell - 100652057
+
 #pragma once
 
 #include "Texture.h"
@@ -10,7 +13,7 @@ class Sprite
 {
 public:
 	Sprite(Texture* m_texture, const glm::vec2& position, const glm::vec2& dimensions);
-	~Sprite();
+	virtual ~Sprite();
 
 	void setTexture(Texture* _texture);
 	Texture* getTexture() const;
@@ -35,9 +38,9 @@ public:
 	template<typename T>
 	T* getBehaviour();
 
-	void init();
-	void update();
-	void render();
+	virtual void init();
+	virtual void update();
+	virtual void render();
 private:
 	Texture* m_texture;
 	glm::vec2 m_pos, m_dim;

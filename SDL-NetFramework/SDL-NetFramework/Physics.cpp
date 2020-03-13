@@ -1,3 +1,6 @@
+//Dylan Moore - 100662175
+//Sydney Caldwell - 100652057
+
 #include "Physics.h"
 
 bool Physics::CollisionPointBox(const glm::vec2& _boxPos, const glm::vec2& _boxDim, const glm::vec2& _point)

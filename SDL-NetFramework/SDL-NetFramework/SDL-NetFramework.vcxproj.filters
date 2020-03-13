@@ -83,6 +83,9 @@
     <ClCompile Include="PuckBehaviour.cpp">
       <Filter>Source Files\Behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="ScoreKeeper.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -126,6 +129,9 @@
     </ClInclude>
     <ClInclude Include="PuckBehaviour.h">
       <Filter>Source Files\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreKeeper.h">
+      <Filter>Source Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,6 +2,8 @@
 //Sydney Caldwell - 100652057
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "Window.h"
 #include "Debug.h"
@@ -11,6 +13,7 @@
 #include "PaddleBehaviour.h"
 #include "RemotePaddleBehaviour.h"
 #include "PuckBehaviour.h"
+#include "ScoreKeeper.h"
 
 #include "Net.h"
 
@@ -49,6 +52,9 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
+	IMG_Init(IMG_INIT_PNG);
+	TTF_Init();
+
 	Window::open("Title", 1280, 720);
 
 	if (!Window::isOpen()) {
@@ -68,8 +74,6 @@ int main(int argc, char *argv[]) {
 	backgroundSprite.setZOrder(1000.0f);
 
 	Sprite puckSprite(&puck, { 32, 32 }, { 32, 32 });
-	PuckBehaviour puckBehaviour = PuckBehaviour(serve);
-	puckSprite.addBehaviour(&puckBehaviour);
 
 	Sprite paddleSprite1(&paddle, { 40, 100 }, { 48, 48 });
 	paddleSprite1.setZOrder(-2.0f);
@@ -84,6 +88,7 @@ int main(int argc, char *argv[]) {
 	testScene.addSprite(&puckSprite);
 	testScene.addSprite(&paddleSprite1);
 	testScene.addSprite(&paddleSprite2);
+
 
 	Scene* currentScene = &testScene;
 
@@ -100,7 +105,9 @@ int main(int argc, char *argv[]) {
 		Net::bindUDP(bindPort);
 
 		printf("Awaiting connection... ");
+		
 		client = Net::acceptTCP(NULL, NULL);
+
 		if (client == INVALID_SOCKET) {
 			printf("Accept failed! WSAError: %ld\n", WSAGetLastError());
 
@@ -122,6 +129,12 @@ int main(int argc, char *argv[]) {
 				DEBUG_LOG("getpeername failed! WSAError: %ld\n", WSAGetLastError());
 				system("pause");
 			}
+
+			//Non-blocking mode after connection
+			unsigned long iMode = 1;
+			int iResult = ioctlsocket(client, FIONBIO, &iMode);
+			if (iResult != NO_ERROR)
+				printf("ioctlsocket failed with error: %ld\n", iResult);
 		}
 	}
 	else {
@@ -152,6 +165,13 @@ int main(int argc, char *argv[]) {
 		paddleSprite1.addBehaviour(&pBehaviour);
 		paddleSprite2.addBehaviour(&pBehaviourRemote);
 	}
+
+	PuckBehaviour puckBehaviour = PuckBehaviour(serve, client);
+	puckSprite.addBehaviour(&puckBehaviour);
+
+	//Add the score keeper with networking info
+	ScoreKeeper sKeeper(Window::getRenderer(), { 640, 25 }, serve, client);
+	testScene.addSprite(&sKeeper);
 
 	//Run application
 	SDL_Event event;

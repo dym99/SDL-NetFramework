@@ -1,3 +1,6 @@
+//Dylan Moore - 100662175
+//Sydney Caldwell - 100652057
+
 #include "Net.h"
 
 #include "Debug.h"
@@ -114,6 +117,7 @@ bool Net::listenTCP()
 		DEBUG_LOG("TCP listen failed! WSAError: %ld\n", WSAGetLastError());
 		return false;
 	}
+
 	return true;
 }
 
@@ -127,6 +131,13 @@ bool Net::connectTCP(const sockaddr* addrinfo, int namelen)
 		DEBUG_LOG("Connection failed! WSAError: %ld\n", WSAGetLastError());
 		return false;
 	}
+
+	//Non-blocking mode after connection
+	unsigned long iMode = 1;
+	int iResult = ioctlsocket(m_TCPSock, FIONBIO, &iMode);
+	if (iResult != NO_ERROR)
+		printf("ioctlsocket failed with error: %ld\n", iResult);
+
 	return true;
 }
 
@@ -136,7 +147,10 @@ int Net::acceptTCP(sockaddr* addr, int* namelen)
 		DEBUG_LOG("TCP socket is not open!\n");
 		return false;
 	}
-	return accept(m_TCPSock, addr, namelen);
+
+	int res = accept(m_TCPSock, addr, namelen);
+
+	return res;
 }
 
 bool Net::sendTCP(std::string data)
@@ -150,7 +164,7 @@ bool Net::sendTCP(std::string data)
 		return false;
 	}
 	else {
-		DEBUG_LOG("[TCP] Send: %s", data.c_str());
+		DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
 	}
 	return true;
 }
@@ -166,7 +180,7 @@ bool Net::sendTCP(int destination, std::string data)
 		return false;
 	}
 	else {
-		DEBUG_LOG("[TCP] Send: %s", data.c_str());
+		DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
 	}
 	return true;
 }
@@ -191,7 +205,7 @@ std::string Net::recvTCP()
 		DEBUG_LOG("TCP recv failed! WSAError: %ld", WSAGetLastError());
 	}
 	else {
-		DEBUG_LOG("[TCP] Recv: %s", buf);
+		DEBUG_LOG("[TCP] Recv: %s\n", buf);
 	}
 
 	return std::string(buf);
@@ -214,7 +228,7 @@ std::string Net::recvTCP(int from)
 		DEBUG_LOG("TCP recv failed! WSAError: %ld", WSAGetLastError());
 	}
 	else {
-		DEBUG_LOG("[TCP] Recv: %s", buf);
+		DEBUG_LOG("[TCP] Recv: %s\n", buf);
 	}
 
 	//Null-terminate, just in case.
@@ -233,7 +247,7 @@ bool Net::sendToUDP(const sockaddr* destination, int namelen, std::string data)
 		return false;
 	}
 	else {
-		DEBUG_LOG("[UDP] Send: %s\n", data.c_str());
+		//DEBUG_LOG("[UDP] Send: %s\n", data.c_str());
 	}
 	return true;
 }
@@ -258,7 +272,7 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 		DEBUG_LOG("UDP recv failed! WSAError: %ld\n", WSAGetLastError());
 	}
 	else {
-		DEBUG_LOG("[UDP] Recv: %s\n", buf);
+		//DEBUG_LOG("[UDP] Recv: %s\n", buf);
 	}
 
 	return std::string(buf);

@@ -1,3 +1,6 @@
+//Dylan Moore - 100662175
+//Sydney Caldwell - 100652057
+
 #pragma once
 #include "IBehaviour.h"
 
@@ -5,7 +8,7 @@
 
 class PuckBehaviour : public IBehaviour {
 public:
-	PuckBehaviour(bool _server);
+	PuckBehaviour(bool _server, int _client);
 	~PuckBehaviour();
 
 	void init() override;
@@ -18,5 +21,6 @@ public:
 private:
 	glm::vec2 m_vel;
 	bool m_server;
+	int m_client;
 };
 

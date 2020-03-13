@@ -1,12 +1,20 @@
+//Dylan Moore - 100662175
+//Sydney Caldwell - 100652057
+
 #include "PuckBehaviour.h"
 
 #include "Sprite.h"
 #include "Time.h"
 
-PuckBehaviour::PuckBehaviour(bool _server)
+#include "Net.h"
+
+#include "ScoreKeeper.h"
+
+PuckBehaviour::PuckBehaviour(bool _server, int _client)
 {
 	m_vel = glm::vec2();
 	m_server = _server;
+	m_client = _client;
 }
 
 PuckBehaviour::~PuckBehaviour()
@@ -33,11 +41,34 @@ void PuckBehaviour::update()
 
 	//Bounce off of sides
 	if (pos.x < 0 || (pos.x + getSprite()->getDimensions().x) > 1280.0f) {
-		if (pos.x < 0)
-			pos.x *= -1;
-		else
-			pos.x -= (pos.x + getSprite()->getDimensions().x) - 1280.0f;
-		m_vel.x *= -1;
+
+		//Score
+		if (pos.y > (256.0f + 8.0f) && pos.y < (472.0f - 8.0f)) {
+			if (pos.x < 0) {
+				//Enemy scored on you!
+				if (m_server) {
+					Net::sendTCP(m_client, "SCORE");
+				}
+				else {
+					Net::sendTCP("SCORE");
+				}
+				if (ScoreKeeper::m_instance)
+					ScoreKeeper::m_instance->increaseRemoteScore();
+				hit({ 256, 360 }, { 0, 0 });
+				return;
+			}
+			else {
+				hit({ 1024, 360 }, { 0, 0 });
+				return;
+			}
+		}
+		else {
+			if (pos.x < 0)
+				pos.x *= -1;
+			else
+				pos.x -= (pos.x + getSprite()->getDimensions().x) - 1280.0f;
+			m_vel.x *= -1;
+		}
 	}
 	if (pos.y < 0 || (pos.y + getSprite()->getDimensions().y) > 720.0f) {
 		if (pos.y < 0)

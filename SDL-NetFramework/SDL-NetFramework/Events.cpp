@@ -1,3 +1,6 @@
+//Dylan Moore - 100662175
+//Sydney Caldwell - 100652057
+
 #include "Events.h"
 
 Events* Events::m_instance = nullptr;
