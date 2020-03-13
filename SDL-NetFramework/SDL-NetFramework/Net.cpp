@@ -161,9 +161,10 @@ bool Net::sendTCP(std::string data)
 		DEBUG_LOG("TCP socket is not open!\n");
 		return false;
 	}
+	int lagms = m_lagMilliseconds;
 	//Execute send on a separate thread after a delay.
-	std::thread([&] {
-		std::this_thread::sleep_for(std::chrono::milliseconds(m_lagMilliseconds));
+	std::thread([&, lagms, data] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
 		send(m_TCPSock, data.c_str(), data.size(), NULL);
 		}).detach();
 	//if (send(m_TCPSock, data.c_str(), data.size(), NULL) == SOCKET_ERROR) {
@@ -182,9 +183,10 @@ bool Net::sendTCP(int destination, std::string data)
 		DEBUG_LOG("TCP socket is not open!\n");
 		return false;
 	}
+	int lagms = m_lagMilliseconds;
 	//Execute send on a separate thread after a delay.
-	std::thread([&] {
-		std::this_thread::sleep_for(std::chrono::milliseconds(m_lagMilliseconds));
+	std::thread([&, lagms, data, destination] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
 		send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL);
 		}).detach();
 	//if (send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL) == SOCKET_ERROR) {
@@ -254,10 +256,12 @@ bool Net::sendToUDP(const sockaddr* destination, int namelen, std::string data)
 		DEBUG_LOG("UDP socket is not open!\n");
 		return false;
 	}
+	int lagms = m_lagMilliseconds;
+	int udpsock = m_UDPSock;
 	//Execute send on a separate thread after a delay.
-	std::thread([&] {
-		std::this_thread::sleep_for(std::chrono::milliseconds(m_lagMilliseconds));
-		sendto(m_UDPSock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen);
+	std::thread([&, lagms, data, udpsock, destination, namelen] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
+		sendto(udpsock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen);
 	}).detach();
 	//if (sendto(m_UDPSock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen) == SOCKET_ERROR) {
 	//	DEBUG_LOG("UDP sendto failed! WSAError: %ld\n", WSAGetLastError());

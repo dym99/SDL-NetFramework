@@ -211,6 +211,7 @@ int main(int argc, char *argv[]) {
 
 		Window::present();
 
+		//Slow down the game a little bit so it runs more consitently.
 		SDL_Delay(10);
 	}
 

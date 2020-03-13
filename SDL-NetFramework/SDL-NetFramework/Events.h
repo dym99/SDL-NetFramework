@@ -70,6 +70,12 @@ public:
 
 	static Events* getInstance();
 	static void destroyInstance();
+
+	inline void test() {
+		for (int i = 0; i < m_keysHeld.size(); ++i) {
+			printf("K:%i;", m_keysHeld[i]);
+		}
+	}
 private:
 	static Events* m_instance;
 
