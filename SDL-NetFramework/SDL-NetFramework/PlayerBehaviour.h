@@ -11,18 +11,14 @@
 class PlayerBehaviour : public IBehaviour
 {
 public:
-	PlayerBehaviour(bool server, sockaddr* addrinfo, int namelen, Sprite* puck);
+	PlayerBehaviour();
 	~PlayerBehaviour();
 
 	void init() override;
 	void update() override;
 
-	const char* const name = "PaddleBehaviour";
+	const char* const name = "PlayerBehaviour";
 private:
-	bool m_server;
-	sockaddr* m_addrinfo;
-	int m_namelen;
-	Sprite* m_puck;
 	glm::vec2 m_lastPos;
 	glm::vec2 m_currentPos;
 	float m_speed;

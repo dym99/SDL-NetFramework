@@ -65,9 +65,6 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="PaddleBehaviour.cpp">
-      <Filter>Source Files\Behaviours</Filter>
-    </ClCompile>
     <ClCompile Include="IBehaviour.cpp">
       <Filter>Source Files\Behaviours</Filter>
     </ClCompile>
@@ -77,16 +74,10 @@
     <ClCompile Include="Text.cpp">
       <Filter>Source Files\Text</Filter>
     </ClCompile>
-    <ClCompile Include="RemotePaddleBehaviour.cpp">
-      <Filter>Source Files\Behaviours</Filter>
-    </ClCompile>
-    <ClCompile Include="PuckBehaviour.cpp">
-      <Filter>Source Files\Behaviours</Filter>
-    </ClCompile>
     <ClCompile Include="ScoreKeeper.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="FakeLagBehaviour.cpp">
+    <ClCompile Include="PlayerBehaviour.cpp">
       <Filter>Source Files\Behaviours</Filter>
     </ClCompile>
   </ItemGroup>
@@ -118,25 +109,16 @@
     <ClInclude Include="IBehaviour.h">
       <Filter>Source Files\Behaviours</Filter>
     </ClInclude>
-    <ClInclude Include="PaddleBehaviour.h">
-      <Filter>Source Files\Behaviours</Filter>
-    </ClInclude>
     <ClInclude Include="Net.h">
       <Filter>Source Files\Net</Filter>
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Source Files\Text</Filter>
     </ClInclude>
-    <ClInclude Include="RemotePaddleBehaviour.h">
-      <Filter>Source Files\Behaviours</Filter>
-    </ClInclude>
-    <ClInclude Include="PuckBehaviour.h">
-      <Filter>Source Files\Behaviours</Filter>
-    </ClInclude>
     <ClInclude Include="ScoreKeeper.h">
       <Filter>Source Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="FakeLagBehaviour.h">
+    <ClInclude Include="PlayerBehaviour.h">
       <Filter>Source Files\Behaviours</Filter>
     </ClInclude>
   </ItemGroup>

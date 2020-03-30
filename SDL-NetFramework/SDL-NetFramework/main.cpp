@@ -10,11 +10,8 @@
 #include "Events.h"
 #include "Scene.h"
 #include "Time.h"
-#include "PaddleBehaviour.h"
-#include "RemotePaddleBehaviour.h"
-#include "PuckBehaviour.h"
+#include "PlayerBehaviour.h"
 #include "ScoreKeeper.h"
-#include "FakeLagBehaviour.h"
 
 #include "Net.h"
 
@@ -32,23 +29,6 @@ static struct addrinfo* addrinfoptr = NULL, hints;
 
 int main(int argc, char *argv[]) {
 	
-	printf("Start server? (y/n)\n");
-	std::string input;
-	std::cin >> input;
-
-	if (input == "y" || input == "Y") {
-		serve = true;
-
-		printf("Enter port to bind to:\n");
-		std::cin >> bindPort;
-	}
-	else {
-		printf("Enter server address:\n");
-		std::cin >> serverAddr;
-		printf("Enter server port:\n");
-		std::cin >> serverPort;
-	}
-
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		return 1;
 	}
@@ -74,21 +54,12 @@ int main(int argc, char *argv[]) {
 	Sprite backgroundSprite(&background, { 0,0 }, { 1300,720 });
 	backgroundSprite.setZOrder(1000.0f);
 
-	Sprite puckSprite(&puck, { 32, 32 }, { 32, 32 });
-
-	Sprite paddleSprite1(&paddle, { 40, 100 }, { 48, 48 });
-	paddleSprite1.setZOrder(-2.0f);
-
-	Sprite paddleSprite2(&paddle2, { 1240, 100 }, { 48, 48 });
-	paddleSprite1.setZOrder(-1.0f);
-
+	Sprite playerSprite(&puck, { 32, 32 }, { 32, 32 });
 
 	//Scenes here
 	Scene testScene;
 	testScene.addSprite(&backgroundSprite);
-	testScene.addSprite(&puckSprite);
-	testScene.addSprite(&paddleSprite1);
-	testScene.addSprite(&paddleSprite2);
+	testScene.addSprite(&playerSprite);
 
 
 	Scene* currentScene = &testScene;
@@ -99,86 +70,10 @@ int main(int argc, char *argv[]) {
 	Net::startTCPSocket();
 	Net::startUDPSocket();
 
-	if (serve) {
-		Net::bindTCP(bindPort);
-		Net::listenTCP();
-
-		Net::bindUDP(bindPort);
-
-		printf("Awaiting connection... ");
-		
-		client = Net::acceptTCP(NULL, NULL);
-
-		if (client == INVALID_SOCKET) {
-			printf("Accept failed! WSAError: %ld\n", WSAGetLastError());
-
-			//Clean up
-			Net::closeTCPSocket();
-			Net::closeUDPSocket();
-			
-			if (!serve) {
-				freeaddrinfo(addrinfoptr);
-			}
-
-			Net::cleanup();
-			SDL_Quit();
-			return 1;
-		}
-		else {
-			printf("Found!\n");
-			if (getpeername(client, (sockaddr*)&clientAddr, &clientnamelen) == SOCKET_ERROR) {
-				DEBUG_LOG("getpeername failed! WSAError: %ld\n", WSAGetLastError());
-				system("pause");
-			}
-
-			//Non-blocking mode after connection
-			unsigned long iMode = 1;
-			int iResult = ioctlsocket(client, FIONBIO, &iMode);
-			if (iResult != NO_ERROR)
-				printf("ioctlsocket failed with error: %ld\n", iResult);
-		}
-	}
-	else {
-		//Get the server address and connect.
-		memset(&hints, 0, sizeof(hints));
-		hints.ai_family = AF_INET;
-		hints.ai_socktype = SOCK_DGRAM;
-		hints.ai_protocol = IPPROTO_UDP;
-
-		if (getaddrinfo(serverAddr.c_str(), serverPort.c_str(), &hints, &addrinfoptr) != 0) {
-			DEBUG_LOG("Getaddrinfo failed!! Couldn't connect to server! WSAError: %d\n", WSAGetLastError());
-		}
-		else {
-			Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
-		}
-	}
 	
-	PlayerBehaviour *pBehaviour;
-	RemotePaddleBehaviour *pBehaviourRemote;
-	if (serve) {
-		pBehaviour = new PlayerBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
-		pBehaviourRemote = new RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
-
-		paddleSprite1.addBehaviour(pBehaviour);
-		paddleSprite2.addBehaviour(pBehaviourRemote);
-	}
-	else {
-		pBehaviour = new PlayerBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
-		pBehaviourRemote = new RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
-
-		paddleSprite1.addBehaviour(pBehaviour);
-		paddleSprite2.addBehaviour(pBehaviourRemote);
-	}
-
-	PuckBehaviour puckBehaviour = PuckBehaviour(serve, client);
-	puckSprite.addBehaviour(&puckBehaviour);
-
-	FakeLagBehaviour flb = FakeLagBehaviour();
-	puckSprite.addBehaviour(&flb);
-
-	//Add the score keeper with networking info
-	ScoreKeeper sKeeper(Window::getRenderer(), { 640, 25 }, serve, client);
-	testScene.addSprite(&sKeeper);
+	PlayerBehaviour pBehaviour = PlayerBehaviour();
+	
+	playerSprite.addBehaviour(&pBehaviour);
 
 	//Run application
 	SDL_Event event;
@@ -226,9 +121,6 @@ int main(int argc, char *argv[]) {
 	if (!serve) {
 		freeaddrinfo(addrinfoptr);
 	}
-	
-	delete pBehaviour;
-	delete pBehaviourRemote;
 
 	Net::cleanup();
 	SDL_Quit();

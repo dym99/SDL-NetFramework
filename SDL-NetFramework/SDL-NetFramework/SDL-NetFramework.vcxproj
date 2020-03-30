@@ -83,15 +83,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FakeLagBehaviour.cpp" />
     <ClCompile Include="IBehaviour.cpp" />
     <ClCompile Include="Net.cpp" />
-    <ClCompile Include="PaddleBehaviour.cpp" />
+    <ClCompile Include="PlayerBehaviour.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PuckBehaviour.cpp" />
-    <ClCompile Include="RemotePaddleBehaviour.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScoreKeeper.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -101,12 +98,9 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FakeLagBehaviour.h" />
     <ClInclude Include="IBehaviour.h" />
     <ClInclude Include="Net.h" />
-    <ClInclude Include="PaddleBehaviour.h" />
-    <ClInclude Include="PuckBehaviour.h" />
-    <ClInclude Include="RemotePaddleBehaviour.h" />
+    <ClInclude Include="PlayerBehaviour.h" />
     <ClInclude Include="ScoreKeeper.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Time.h" />
