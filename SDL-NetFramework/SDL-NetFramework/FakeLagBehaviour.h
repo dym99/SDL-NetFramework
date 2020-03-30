@@ -10,5 +10,7 @@ public:
 
 	void init() override;
 	void update() override;
+
+	const char* const name = "FLBehaviour";
 };
 

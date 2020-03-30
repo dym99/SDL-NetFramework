@@ -19,13 +19,16 @@ void FakeLagBehaviour::init()
 
 void FakeLagBehaviour::update()
 {
-	//if (EVENTS->isKeyDown(SDLK_p)) {
-	if (GetAsyncKeyState(VK_UP)) {
+	if (EVENTS->isKeyDown(SDLK_EQUALS)) {
 		Net::incLag();
+		printf("Simulated Lag: %i milliseconds.\n", Net::getLag());
 	}
-	//if (EVENTS->isKeyDown(SDLK_o)) {
-	if (GetAsyncKeyState(VK_DOWN)) {
+	if (EVENTS->isKeyDown(SDLK_MINUS)) {
 		Net::decLag();
-		printf("YEE");
+		printf("Simulated Lag: %i milliseconds.\n", Net::getLag());
+	}
+	if (GetAsyncKeyState(VK_UP)) {
+	}
+	if (GetAsyncKeyState(VK_DOWN)) {
 	}
 }

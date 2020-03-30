@@ -17,6 +17,7 @@ public:
 	void init() override;
 	void update() override;
 
+	const char* const name = "PaddleBehaviour";
 private:
 	bool m_server;
 	sockaddr* m_addrinfo;

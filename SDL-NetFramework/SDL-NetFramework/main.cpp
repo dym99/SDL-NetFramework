@@ -152,19 +152,21 @@ int main(int argc, char *argv[]) {
 			Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
 		}
 	}
+	PaddleBehaviour *pBehaviour;
+	RemotePaddleBehaviour *pBehaviourRemote;
 	if (serve) {
-		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
-		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
+		pBehaviour = new PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
+		pBehaviourRemote = new RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
 
-		paddleSprite1.addBehaviour(&pBehaviour);
-		paddleSprite2.addBehaviour(&pBehaviourRemote);
+		paddleSprite1.addBehaviour(pBehaviour);
+		paddleSprite2.addBehaviour(pBehaviourRemote);
 	}
 	else {
-		PaddleBehaviour pBehaviour = PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
-		RemotePaddleBehaviour pBehaviourRemote = RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
+		pBehaviour = new PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
+		pBehaviourRemote = new RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
 
-		paddleSprite1.addBehaviour(&pBehaviour);
-		paddleSprite2.addBehaviour(&pBehaviourRemote);
+		paddleSprite1.addBehaviour(pBehaviour);
+		paddleSprite2.addBehaviour(pBehaviourRemote);
 	}
 
 	PuckBehaviour puckBehaviour = PuckBehaviour(serve, client);
@@ -189,9 +191,9 @@ int main(int argc, char *argv[]) {
 		Time::time += Time::deltaTime;
 		Time::lastClock = now;
 
+		EVENTS->newFrame();
 		//Poll Events
 		while (SDL_PollEvent(&event)) {
-			EVENTS->newFrame();
 			EVENTS->processEvent(event);
 			switch (event.type) {
 			case SDL_QUIT:
@@ -222,6 +224,9 @@ int main(int argc, char *argv[]) {
 	if (!serve) {
 		freeaddrinfo(addrinfoptr);
 	}
+
+	delete pBehaviour;
+	delete pBehaviourRemote;
 
 	Net::cleanup();
 	SDL_Quit();

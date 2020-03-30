@@ -18,6 +18,7 @@ public:
 
 	const float SPEED = 100.0f;
 	const float MAX_SPEED_PER_FRAME = 40.0f;
+	const char* const name = "Puck";
 private:
 	glm::vec2 m_vel;
 	bool m_server;

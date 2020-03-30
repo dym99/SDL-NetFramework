@@ -13,6 +13,7 @@ public:
 
 	void setSprite(Sprite* _sprite);
 	Sprite* getSprite() const;
+	const char* const name = "IBehaviour";
 private:
 	Sprite* m_sprite;
 };

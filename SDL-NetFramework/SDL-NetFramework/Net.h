@@ -49,7 +49,7 @@ public:
 	//Simulated lag
 	static void incLag();
 	static void decLag();
-
+	inline static int getLag() { return m_lagMilliseconds; }
 private:
 	static SOCKET m_UDPSock;
 	static SOCKET m_TCPSock;

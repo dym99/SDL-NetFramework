@@ -65,7 +65,7 @@ void Events::newFrame()
 	m_mouseWUp = false;
 }
 
-void Events::processEvent(SDL_Event _event)
+void Events::processEvent(const SDL_Event& _event)
 {
 	switch (_event.type) {
 	case SDL_KEYDOWN:
@@ -239,7 +239,7 @@ void Events::destroyInstance()
 	delete m_instance;
 }
 
-bool Events::vectorContains(std::vector<int> _vec, int _key)
+bool Events::vectorContains(const std::vector<int> &_vec, int _key)
 {
 	bool temp = false;
 	for (int i = 0; i < _vec.size(); ++i) {

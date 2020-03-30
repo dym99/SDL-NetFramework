@@ -2,6 +2,7 @@
 //Sydney Caldwell - 100652057
 
 #include "Sprite.h"
+#include "IBehaviour.h"
 
 Sprite::Sprite(Texture* _texture, const glm::vec2& _position, const glm::vec2& _dimensions)
 {

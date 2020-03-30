@@ -63,7 +63,7 @@ public:
 	bool getMouseWheelDown();
 
 	void newFrame();
-	void processEvent(SDL_Event _event);
+	void processEvent(const SDL_Event &_event);
 
 	void setJoyDeadZone(float _deadzone);
 	float getJoyDeadZone();
@@ -100,6 +100,6 @@ private:
 	float m_joyDeadZone;
 	float m_controllerAxes[(int)Gamepad_Axis::NUM_AXIS];
 
-	bool vectorContains(std::vector<int> _vec, int _key);
+	bool vectorContains(const std::vector<int> &_vec, int _key);
 };
 
