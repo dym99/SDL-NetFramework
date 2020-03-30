@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
 	}
 	
 	//Load resources here
-	Texture background("res/Backgrounds/Background_Hockey.png");
-	Texture puck("res/Balls/Puck.png");
+	Texture background("res/Backgrounds/Background_Space.png");
+	Texture puck("res/Balls/Ball_Alien.png");
 	Texture paddle("res/Paddles/Paddle_AH.png");
 	Texture paddle2("res/Paddles/Paddle_AH_Blue.png");
 	
