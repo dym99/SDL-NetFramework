@@ -17,67 +17,51 @@
 
 #include <sstream>
 
-PaddleBehaviour::PaddleBehaviour(bool server, sockaddr* addrinfo, int namelen, Sprite* puck)
+PlayerBehaviour::PlayerBehaviour(bool server, sockaddr* addrinfo, int namelen, Sprite* puck)
 {
 	m_server = server;
 	m_addrinfo = addrinfo;
 	m_namelen = namelen;
 	m_puck = puck;
 	m_lastPos = glm::vec2();
+	m_currentPos = glm::vec2();
 	m_speed = 0;
 }
 
-PaddleBehaviour::~PaddleBehaviour()
+PlayerBehaviour::~PlayerBehaviour()
 {
 }
 
-void PaddleBehaviour::init()
+void PlayerBehaviour::init()
 {
-
+	m_currentPos = { 640, 360 };
 }
 
-void PaddleBehaviour::update()
+void PlayerBehaviour::update()
 {
-
-	int x, y;
-	EVENTS->getMousePosition(&x, &y);
-	glm::vec2 position = { (float)x, (float)y };
+	m_lastPos = m_currentPos;
 	
-
-	std::stringstream message;
-	message << "[paddle]" << position.x << "," << position.y;
-	if (m_server) {
-		Net::sendToUDP(m_addrinfo, m_namelen, message.str());
-	}
-	else {
-		Net::sendToUDP(m_addrinfo, m_namelen, message.str());
+	if (EVENTS->isKeyDown(SDLK_UP) || EVENTS->isKeyDown(SDLK_w))
+	{
+		//current position + y
+		m_currentPos.y = m_lastPos.y - m_speed * Time::deltaTime;
 	}
 	
-	//std::string message = Net::recvFromUDP(m_addrinfo, &m_namelen);
-	//glm::vec2 position;
-	//sscanf(message.c_str(), "%f,%f", &position.x, &position.y);
-	
-	m_lastPos = getSprite()->getPosition() + (getSprite()->getDimensions() * 0.5f);
-
-	getSprite()->setPosition((position - getSprite()->getDimensions() * 0.5f));
-
-	m_speed = glm::distance(m_lastPos, position)/Time::deltaTime;
-
-	glm::vec2 puckpos = m_puck->getPosition() + m_puck->getDimensions() * 0.5f;
-	if (Physics::CollisionCircleCircle(position, 24.0f, puckpos, 16.0f)) {
-		//Bounce
-		glm::vec2 dir = glm::vec2();
-		dir = glm::normalize(puckpos - position) * m_speed;
-		std::stringstream puckMessage;
-		puckMessage << "[puck]" << puckpos.x << "," << puckpos.y << "," << dir.x << "," << dir.y;
-		if (m_server) {
-			Net::sendToUDP(m_addrinfo, m_namelen, puckMessage.str());
-		}
-		else {
-			Net::sendToUDP(m_addrinfo, m_namelen, puckMessage.str());
-		}
-
-		m_puck->getBehaviour<PuckBehaviour>()->hit(puckpos, dir);
+	if (EVENTS->isKeyDown(SDLK_DOWN) || EVENTS->isKeyDown(SDLK_s))
+	{
+		//current position - y
+		m_currentPos.y = m_lastPos.y + m_speed * Time::deltaTime;
 	}
-	
+	if (EVENTS->isKeyDown(SDLK_LEFT) || EVENTS->isKeyDown(SDLK_a))
+	{
+		//current position -x
+		m_currentPos.x = m_lastPos.x - m_speed * Time::deltaTime;
+	}
+	if (EVENTS->isKeyDown(SDLK_RIGHT) || EVENTS->isKeyDown(SDLK_d))
+	{
+		//current position + x
+		m_currentPos.x = m_lastPos.x + m_speed * Time::deltaTime;
+
+	}
+
 }

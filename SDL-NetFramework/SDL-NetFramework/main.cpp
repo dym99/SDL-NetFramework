@@ -152,17 +152,18 @@ int main(int argc, char *argv[]) {
 			Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
 		}
 	}
-	PaddleBehaviour *pBehaviour;
+	
+	PlayerBehaviour *pBehaviour;
 	RemotePaddleBehaviour *pBehaviourRemote;
 	if (serve) {
-		pBehaviour = new PaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
+		pBehaviour = new PlayerBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
 		pBehaviourRemote = new RemotePaddleBehaviour(serve, (sockaddr*)&clientAddr, clientnamelen, &puckSprite);
 
 		paddleSprite1.addBehaviour(pBehaviour);
 		paddleSprite2.addBehaviour(pBehaviourRemote);
 	}
 	else {
-		pBehaviour = new PaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
+		pBehaviour = new PlayerBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
 		pBehaviourRemote = new RemotePaddleBehaviour(serve, addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &puckSprite);
 
 		paddleSprite1.addBehaviour(pBehaviour);
@@ -218,13 +219,14 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Clean up
+	
 	Net::closeTCPSocket();
 	Net::closeUDPSocket();
 
 	if (!serve) {
 		freeaddrinfo(addrinfoptr);
 	}
-
+	
 	delete pBehaviour;
 	delete pBehaviourRemote;
 

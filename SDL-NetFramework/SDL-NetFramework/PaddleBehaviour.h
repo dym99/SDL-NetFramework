@@ -8,11 +8,11 @@
 
 #include <glm/glm.hpp>
 
-class PaddleBehaviour : public IBehaviour
+class PlayerBehaviour : public IBehaviour
 {
 public:
-	PaddleBehaviour(bool server, sockaddr* addrinfo, int namelen, Sprite* puck);
-	~PaddleBehaviour();
+	PlayerBehaviour(bool server, sockaddr* addrinfo, int namelen, Sprite* puck);
+	~PlayerBehaviour();
 
 	void init() override;
 	void update() override;
@@ -24,6 +24,7 @@ private:
 	int m_namelen;
 	Sprite* m_puck;
 	glm::vec2 m_lastPos;
+	glm::vec2 m_currentPos;
 	float m_speed;
 };
 
