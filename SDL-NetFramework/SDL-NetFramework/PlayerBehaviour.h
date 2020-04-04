@@ -18,6 +18,9 @@ public:
 	void update() override;
 
 	const char* const name = "PlayerBehaviour";
+
+	glm::vec2 getLastPos() const;
+	glm::vec2 getPos() const;
 private:
 	glm::vec2 m_lastPos;
 	glm::vec2 m_currentPos;

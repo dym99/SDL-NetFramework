@@ -60,3 +60,13 @@ void PlayerBehaviour::update()
 
 	getSprite()->setPosition(m_currentPos);
 }
+
+glm::vec2 PlayerBehaviour::getLastPos() const
+{
+	return m_lastPos;
+}
+
+glm::vec2 PlayerBehaviour::getPos() const
+{
+	return m_currentPos;
+}

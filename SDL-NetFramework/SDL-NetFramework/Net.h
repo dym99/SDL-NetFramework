@@ -42,6 +42,9 @@ public:
 	static bool sendToUDP(const sockaddr* destination, int namelen, std::string data);
 	static std::string recvFromUDP(sockaddr* from, int* fromlen);
 
+	static bool sendToUDPBin(const sockaddr* destination, int namelen, void* data, int datalen);
+	static void*recvFromUDPBin(sockaddr* from, int* fromlen, int& recvlen);
+
 	//Close sockets
 	static void closeUDPSocket();
 	static void closeTCPSocket();

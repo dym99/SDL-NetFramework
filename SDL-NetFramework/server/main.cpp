@@ -50,6 +50,7 @@ int main()
 	}
 
 	//Prompt the user for a port to bind to:
+	printf("Enter port to bind to:\n > ");
 	unsigned short port = 0;
 	while (1) {
 		if (scanf_s("%hu", &port) == 1) {
@@ -95,17 +96,9 @@ int main()
 	bindaddrinfo.sin_addr.s_addr = INADDR_ANY;
 	bindaddrinfo.sin_port = port;
 
+
+	printf("Binding sockets...\n");
 	//Print error and exit application if the sockets fail to bind.
-	if (bind(serverSocket, (sockaddr*)(&bindaddrinfo), sizeof(sockaddr_in)) == SOCKET_ERROR) {
-		fprintf(stderr, "Failed to bind tcp socket to port '%hd'!\nWSAError: %ld\n", port, WSAGetLastError());
-
-		//Close sockets.
-		closesocket(serverSocket);
-		closesocket(udpSock);
-
-		WSACleanup();
-		return 1;
-	}
 	if (bind(udpSock, (sockaddr*)(&bindaddrinfo), sizeof(sockaddr_in)) == SOCKET_ERROR) {
 		fprintf(stderr, "Failed to bind udp socket to port '%hd'!\nWSAError: %ld\n", port, WSAGetLastError());
 
@@ -116,10 +109,22 @@ int main()
 		WSACleanup();
 		return 1;
 	}
+	if (bind(serverSocket, (sockaddr*)(&bindaddrinfo), sizeof(sockaddr_in)) == SOCKET_ERROR) {
+		fprintf(stderr, "Failed to bind tcp socket to port '%hd'!\nWSAError: %ld\n", port, WSAGetLastError());
 
+		//Close sockets.
+		closesocket(serverSocket);
+		closesocket(udpSock);
+
+		WSACleanup();
+		return 1;
+	}
+	
+
+	printf("Listening for clients...\n");
 	//Start listeneing for clients.
 	//Stop the application if this fails, and print the error.
-	if (listen(serverSocket, MAX_CLIENTS) == SOCKET_ERROR) {
+	if (listen(serverSocket, maxClients) == SOCKET_ERROR) {
 		fprintf(stderr, "Failed to listen!\nWSAError: %ld\n", WSAGetLastError());
 
 		//Close sockets.
@@ -131,6 +136,7 @@ int main()
 	}
 
 	serverRunning = true;
+	printf("Server started.\n");
 
 	//IP for accept
 	sockaddr_in addrInfo = {};

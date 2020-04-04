@@ -15,7 +15,9 @@
 
 #include "Net.h"
 
+#include <chrono>
 #include <iostream>
+#include <unordered_map>
 
 static bool serve = false;
 static std::string serverAddr, serverPort;
@@ -26,6 +28,13 @@ static struct sockaddr_in clientAddr = {};
 static int clientnamelen = sizeof(sockaddr);
 
 static struct addrinfo* addrinfoptr = NULL, hints;
+
+struct ClientInfo {
+	bool posChanged = false;
+	glm::vec2 pos = {};
+};
+
+static std::unordered_map<int, ClientInfo> activePlayers;
 
 int main(int argc, char *argv[]) {
 	
@@ -86,6 +95,7 @@ int main(int argc, char *argv[]) {
 
 	if (getaddrinfo(serverAddr.c_str(), serverPort.c_str(), &hints, &addrinfoptr) != 0) {
 		DEBUG_LOG("Getaddrinfo failed!! Couldn't connect to server! WSAError: %d\n", WSAGetLastError());
+		system("pause");
 	}
 	else {
 		Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
@@ -99,6 +109,10 @@ int main(int argc, char *argv[]) {
 	SDL_Event event;
 
 	currentScene->init();
+
+	std::chrono::time_point<std::chrono::steady_clock>
+		lastClockChrono = std::chrono::steady_clock::now(),
+		nowChrono = std::chrono::steady_clock::now();
 
 	while (Window::isOpen()) {
 		//Calculate delta time
@@ -119,6 +133,82 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
+		//Gotta clear those "posChanged"!
+		for (auto i = activePlayers.begin(); i != activePlayers.end(); ++i) {
+			i->second.posChanged = false;
+		}
+
+		//Gotta receive those messages
+		int recvlen = 0;
+		int addrlen = addrinfoptr->ai_addrlen;
+		while (1) {
+			void* data = Net::recvFromUDPBin(addrinfoptr->ai_addr, &addrlen, recvlen);
+			if (recvlen == -1) {
+				int err = WSAGetLastError();
+				if (err == WSAEWOULDBLOCK) {
+					break;
+				}
+				else {
+					DEBUG_LOG("Failed to recv! WSAError: %ld\n", err);
+					break;
+				}
+			}
+			
+			//Parse that dang data
+
+			//Ensure it is big enough to read an int.
+			if (recvlen >= 4) {
+				//The first four bytes are just the number of clients.
+				int numClients = *((int*)data);
+				//
+				// Each client data packet is:
+				//
+				//	| Client id (int)        |
+				//	|------------------------|
+				//	| Is pos changed? (bool) |
+				//	|------------------------|
+				//	| Position (2xfloat)     |
+				//
+				//	Grand total of 4+1+(4*2) = 13 bytes per player
+				//
+
+				//ensure the packet is complete (enough room for each client and numClients (int)
+				if (recvlen < 13 * numClients + 4) {
+					//All good
+					//Loop through and extract those juicy position updates
+					//Start an iterator at the beginning (past numclients though)
+					int bufIterator = 0 + sizeof(int);
+					for (int i = 0; i < numClients; ++i) {
+						int cli_id = *((int*)((char*)data)[bufIterator]);
+						bufIterator += sizeof(int);
+						bool cli_isPosChanged = *((bool*)((char*)data)[bufIterator]);
+						bufIterator += sizeof(bool);
+						glm::vec2 cli_pos = glm::vec2(0, 0);
+						if (cli_isPosChanged) {
+							cli_pos = *((glm::vec2*)((char*)data)[bufIterator]);
+							bufIterator += sizeof(glm::vec2);
+						}
+
+						//Take those values and pass em to somewhere where they actually do something.
+						ClientInfo client;
+						client.posChanged = cli_isPosChanged;
+						client.pos = cli_pos;
+						activePlayers.insert_or_assign(cli_id, client);
+					}
+				}
+				else {
+					//Packet was bad
+					DEBUG_LOG("Bad packet: Packet too small to fit %d player infos\n", numClients);
+				}
+			}
+			else {
+				//Packet was bad
+				DEBUG_LOG("Bad packet: Packet too small: only %d bytes.\n", recvlen);
+			}
+
+		}
+
+
 		//Update
 		currentScene->update();
 
@@ -129,8 +219,19 @@ int main(int argc, char *argv[]) {
 
 		Window::present();
 
-		//Slow down the game a little bit so it runs more consitently.
-		SDL_Delay(10);
+		//Update chrono
+		lastClockChrono = nowChrono;
+		nowChrono = std::chrono::steady_clock::now();
+
+		while (std::chrono::duration_cast<std::chrono::milliseconds>(nowChrono - lastClockChrono) < std::chrono::milliseconds(16)) {
+			nowChrono = std::chrono::steady_clock::now();
+		}
+
+		glm::vec2 lastPos = pBehaviour.getLastPos();
+		glm::vec2 pos = pBehaviour.getPos();
+		if (lastPos != pos) {
+			Net::sendToUDPBin(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &pos, sizeof(glm::vec2));
+		}
 	}
 
 	//Clean up

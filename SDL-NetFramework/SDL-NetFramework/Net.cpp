@@ -263,13 +263,6 @@ bool Net::sendToUDP(const sockaddr* destination, int namelen, std::string data)
 		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
 		sendto(udpsock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen);
 	}).detach();
-	//if (sendto(m_UDPSock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen) == SOCKET_ERROR) {
-	//	DEBUG_LOG("UDP sendto failed! WSAError: %ld\n", WSAGetLastError());
-	//	return false;
-	//}
-	//else {
-	//	//DEBUG_LOG("[UDP] Send: %s\n", data.c_str());
-	//}
 	return true;
 }
 
@@ -297,6 +290,40 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 	}
 
 	return std::string(buf);
+}
+
+bool Net::sendToUDPBin(const sockaddr* destination, int namelen, void* data, int datalen)
+{
+	if (!m_UDPOpen) {
+		DEBUG_LOG("UDP socket is not open!\n");
+		return false;
+	}
+	int lagms = m_lagMilliseconds;
+	int udpsock = m_UDPSock;
+	//Execute send on a separate thread after a delay.
+	std::thread([&, lagms, data, datalen, udpsock, destination, namelen] {
+		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
+		sendto(udpsock, (const char*)data, datalen, NULL, destination, namelen);
+		}).detach();
+}
+
+void* Net::recvFromUDPBin(sockaddr* from, int* fromlen, int& recvlen)
+{
+	if (!m_UDPOpen) {
+		DEBUG_LOG("UDP socket is not open!\n");
+		recvlen = 0;
+		return NULL;
+	}
+	//Create empty buffer
+	char buf[NET_BUFFER_LEN];
+	ZeroMemory(buf, NET_BUFFER_LEN);
+
+	//Recieve
+	int bytes = recvfrom(m_UDPSock, buf, NET_BUFFER_LEN, NULL, from, fromlen);
+
+	//Return the data and pass the size.
+	recvlen = bytes;
+	return (void*)&buf[0];
 }
 
 void Net::closeUDPSocket()
