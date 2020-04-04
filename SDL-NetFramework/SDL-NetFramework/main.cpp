@@ -70,7 +70,27 @@ int main(int argc, char *argv[]) {
 	Net::startTCPSocket();
 	Net::startUDPSocket();
 
-	
+	printf("Enter an ip address:\n > ");
+
+	std::cin >> serverAddr;
+
+	printf("Enter a port:\n > ");
+
+	std::cin >> serverPort;
+
+	//Get the server address and connect.
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_DGRAM;
+	hints.ai_protocol = IPPROTO_UDP;
+
+	if (getaddrinfo(serverAddr.c_str(), serverPort.c_str(), &hints, &addrinfoptr) != 0) {
+		DEBUG_LOG("Getaddrinfo failed!! Couldn't connect to server! WSAError: %d\n", WSAGetLastError());
+	}
+	else {
+		Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
+	}
+
 	PlayerBehaviour pBehaviour = PlayerBehaviour();
 	
 	playerSprite.addBehaviour(&pBehaviour);
