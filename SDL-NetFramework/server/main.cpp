@@ -11,7 +11,7 @@
 #include <vector>
 
 #define MAX_CLIENTS 8
-#define TICK_DELAY 16
+#define TICK_DELAY 250//16
 
 bool serverRunning = false;
 
@@ -28,14 +28,7 @@ struct Client {
 };
 
 
-std::vector<Client> clientListA = std::vector<Client>();
-std::vector<Client> clientListB = std::vector<Client>();
-
-std::vector<Client> *clientListRead = &clientListA, *clientListWrite = &clientListB;
-
-void clientListSwap() {
-	std::swap(clientListRead, clientListWrite);
-}
+std::vector<Client> clientList = std::vector<Client>();
 
 int main()
 {
@@ -59,7 +52,6 @@ int main()
 		printf("Error: Please enter a valid port!\n");
 		printf("Enter max number of clients:\n > ");
 	}
-
 
 	printf("Starting server...\n");
 	//Initialise winsock
@@ -94,7 +86,7 @@ int main()
 	sockaddr_in bindaddrinfo = {};
 	bindaddrinfo.sin_family = AF_INET;
 	bindaddrinfo.sin_addr.s_addr = INADDR_ANY;
-	bindaddrinfo.sin_port = port;
+	bindaddrinfo.sin_port = htons(port);
 
 
 	printf("Binding sockets...\n");
@@ -149,8 +141,10 @@ int main()
 
 	//Thread to listen for new clients.
 	std::thread listenThread = std::thread([&serverSocket, &addrInfo, &namelen, &udpSock]() {
+		printf("Starting listenThread...\n");
 		while (serverRunning) {
 			SOCKET client = accept(serverSocket, (sockaddr*)(&addrInfo), &namelen);
+			printf("Incoming connection request...\n");
 
 			if (client == INVALID_SOCKET) {
 				fprintf(stderr, "Failed to accept incoming connection!\nWSAError: %ld\n", WSAGetLastError());
@@ -180,7 +174,7 @@ int main()
 
 				//Client has connected. Print it to the console.
 				char buf[24] = {};
-				const char* ipaddr = inet_ntop(clientaddr.sin_family, (sockaddr*)(&clientaddr), buf, 24);
+				const char* ipaddr = inet_ntop(AF_INET, (sockaddr*)(&clientaddr), buf, 24);
 				printf("\nClient connected!\nIP: %s\nPort: %hd\n\n", ipaddr, clientaddr.sin_port);
 
 				//Add to list of clients
@@ -190,7 +184,7 @@ int main()
 				client.positionChanged = 0;
 				client.positionUpdate = {};
 
-				clientListWrite->push_back(client);
+				clientList.push_back(client);
 			}
 		}
 	});
@@ -200,17 +194,31 @@ int main()
 	
 	std::thread recvThread = std::thread([&udpSock]() {
 		while (serverRunning) {
+			
+		}
+		});
+	recvThread.detach();
+
+	
+	//Run game server.
+	std::chrono::time_point<std::chrono::steady_clock>	lastClock = std::chrono::steady_clock::now(), now=std::chrono::steady_clock::now();
+	while (serverRunning) {
+		{
 			char buf[512];
-			for (Client client : (*clientListWrite)) {
+			for (Client client : (clientList)) {
 				client.positionChanged = 0;
 			}
-			for (Client client : (*clientListWrite)) {
+			for (Client client : (clientList)) {
 				memset(buf, 0, 512);
 				int namelen = sizeof(sockaddr_in);
 				int received = recvfrom(udpSock, buf, 512, 0, (sockaddr*)&client.address, &namelen);
 				//If no error occured...
 				if (received != SOCKET_ERROR) {
-					printf("RECV from %s: %s\n", client.name, buf);
+					printf("RECV from %s: ", client.name);
+					for (int i = received; i >= 0; --i) {
+						printf("%02X ", buf[i]);
+					}
+					printf("\n");
 				}
 				//If the packet has contents...
 				if (received > 0) {
@@ -221,26 +229,15 @@ int main()
 						client.positionUpdate.x = *(&buf[0]);
 						client.positionUpdate.y = *(&buf[4]);
 					}
+					
 				}
 			}
-			//Swap the double buffer
-			clientListSwap();
 		}
-		});
-	recvThread.detach();
-
-	
-	//Run game server.
-	std::chrono::time_point<std::chrono::steady_clock>	lastClock = std::chrono::steady_clock::now(), now=std::chrono::steady_clock::now();
-	while (serverRunning) {
 		//Wait until it is time to send the packet.
 		lastClock = now;
 		while (std::chrono::duration_cast<std::chrono::milliseconds>(now-lastClock)<std::chrono::microseconds(TICK_DELAY)) {
 			now = std::chrono::steady_clock::now();
 		}
-
-		//Get a constant snapshot of the client list.
-		const std::vector<Client> clientList = std::vector<Client>(*clientListRead);
 
 
 		//Create a buffer to hold the packet data.
@@ -276,10 +273,14 @@ int main()
 			}
 		}
 
+		printf("SENDING: ");
+		for (int i = 0; i < bufIterator; ++i) {
+			printf("%02X ", buf[i]);
+		}
+		printf("\n");
 		//Send the packet update.
 		for (Client client : clientList) {
 			sendto(udpSock, buf, 512, 0, (sockaddr*)&client.address, namelen);
-			printf("SEND to %s: %s\n", client.name, buf);
 		}
 
 		//Exit on "Q"

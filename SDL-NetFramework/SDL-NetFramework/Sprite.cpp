@@ -15,6 +15,17 @@ Sprite::Sprite(Texture* _texture, const glm::vec2& _position, const glm::vec2& _
 	m_behaviours = std::vector<IBehaviour*>();
 }
 
+Sprite::Sprite(const Sprite& _other)
+{
+	m_texture = _other.m_texture;
+	m_angle = _other.m_angle;
+	m_behaviours = _other.m_behaviours;
+	m_dim = _other.m_dim;
+	m_flip = _other.m_flip;
+	m_pos = _other.m_pos;
+	m_zOrder = _other.m_zOrder;
+}
+
 Sprite::~Sprite()
 {
 	m_texture = nullptr;

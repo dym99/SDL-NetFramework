@@ -13,6 +13,7 @@ class Sprite
 {
 public:
 	Sprite(Texture* m_texture, const glm::vec2& position, const glm::vec2& dimensions);
+	Sprite(const Sprite&);
 	virtual ~Sprite();
 
 	void setTexture(Texture* _texture);

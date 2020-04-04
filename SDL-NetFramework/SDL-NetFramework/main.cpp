@@ -39,6 +39,7 @@ static std::unordered_map<int, ClientInfo> activePlayers;
 int main(int argc, char *argv[]) {
 	
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+		DEBUG_LOG("SDL_Init failed!\n");
 		return 1;
 	}
 
@@ -48,14 +49,14 @@ int main(int argc, char *argv[]) {
 	Window::open("Title", 1280, 720);
 
 	if (!Window::isOpen()) {
-		DEBUG_LOG("Failed to create window!");
+		DEBUG_LOG("Failed to create window!\n");
 		SDL_Quit();
 		return 1;
 	}
 	
 	//Load resources here
 	Texture background("res/Backgrounds/Background_Space.png");
-	Texture puck("res/Balls/Ball_Alien.png");
+	Texture alien("res/Balls/Ball_Alien.png");
 	Texture paddle("res/Paddles/Paddle_AH.png");
 	Texture paddle2("res/Paddles/Paddle_AH_Blue.png");
 	
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
 	Sprite backgroundSprite(&background, { 0,0 }, { 1300,720 });
 	backgroundSprite.setZOrder(1000.0f);
 
-	Sprite playerSprite(&puck, { 32, 32 }, { 32, 32 });
+	Sprite playerSprite(&alien, { 32, 32 }, { 32, 32 });
 
 	//Scenes here
 	Scene testScene;
@@ -78,6 +79,8 @@ int main(int argc, char *argv[]) {
 
 	Net::startTCPSocket();
 	Net::startUDPSocket();
+
+	Net::bindUDP(0);
 
 	printf("Enter an ip address:\n > ");
 
@@ -95,7 +98,8 @@ int main(int argc, char *argv[]) {
 
 	if (getaddrinfo(serverAddr.c_str(), serverPort.c_str(), &hints, &addrinfoptr) != 0) {
 		DEBUG_LOG("Getaddrinfo failed!! Couldn't connect to server! WSAError: %d\n", WSAGetLastError());
-		system("pause");
+		Net::cleanup();
+		return 1;
 	}
 	else {
 		Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
@@ -223,7 +227,7 @@ int main(int argc, char *argv[]) {
 		lastClockChrono = nowChrono;
 		nowChrono = std::chrono::steady_clock::now();
 
-		while (std::chrono::duration_cast<std::chrono::milliseconds>(nowChrono - lastClockChrono) < std::chrono::milliseconds(16)) {
+		while (std::chrono::duration_cast<std::chrono::milliseconds>(nowChrono - lastClockChrono) < std::chrono::milliseconds(/*16*/250)) {
 			nowChrono = std::chrono::steady_clock::now();
 		}
 

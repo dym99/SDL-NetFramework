@@ -166,6 +166,8 @@ bool Net::sendTCP(std::string data)
 	std::thread([&, lagms, data] {
 		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
 		send(m_TCPSock, data.c_str(), data.size(), NULL);
+
+		DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
 		}).detach();
 	//if (send(m_TCPSock, data.c_str(), data.size(), NULL) == SOCKET_ERROR) {
 	//	DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
@@ -188,6 +190,8 @@ bool Net::sendTCP(int destination, std::string data)
 	std::thread([&, lagms, data, destination] {
 		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
 		send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL);
+
+		DEBUG_LOG("[TCP] Send: %s\n", data.c_str());
 		}).detach();
 	//if (send(destination, data.c_str(), min(data.size(), NET_BUFFER_LEN), NULL) == SOCKET_ERROR) {
 	//	DEBUG_LOG("TCP Send failed! WSAError: %ld\n", WSAGetLastError());
@@ -262,6 +266,7 @@ bool Net::sendToUDP(const sockaddr* destination, int namelen, std::string data)
 	std::thread([&, lagms, data, udpsock, destination, namelen] {
 		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
 		sendto(udpsock, data.data(), min(data.size(), NET_BUFFER_LEN), NULL, destination, namelen);
+		DEBUG_LOG("[UDP] Send: %s\n", data.c_str());
 	}).detach();
 	return true;
 }
@@ -286,7 +291,7 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 		DEBUG_LOG("UDP recv failed! WSAError: %ld\n", WSAGetLastError());
 	}
 	else {
-		//DEBUG_LOG("[UDP] Recv: %s\n", buf);
+		DEBUG_LOG("[UDP] Recv: %s\n", buf);
 	}
 
 	return std::string(buf);
@@ -304,6 +309,11 @@ bool Net::sendToUDPBin(const sockaddr* destination, int namelen, void* data, int
 	std::thread([&, lagms, data, datalen, udpsock, destination, namelen] {
 		std::this_thread::sleep_for(std::chrono::milliseconds(lagms));
 		sendto(udpsock, (const char*)data, datalen, NULL, destination, namelen);
+		DEBUG_LOG("[UDP] Send (Binary): ");
+		for (int i = 0; i < datalen; ++i) {
+			DEBUG_LOG("%02X ", ((char*)data)[i]);
+		}
+		DEBUG_LOG("\n");
 		}).detach();
 }
 
@@ -320,6 +330,14 @@ void* Net::recvFromUDPBin(sockaddr* from, int* fromlen, int& recvlen)
 
 	//Recieve
 	int bytes = recvfrom(m_UDPSock, buf, NET_BUFFER_LEN, NULL, from, fromlen);
+
+	if (bytes > 0) {
+		DEBUG_LOG("[UDP] Send (Binary): ");
+		for (int i = 0; i < bytes; ++i) {
+			DEBUG_LOG("%02X ", ((char)buf[i]));
+		}
+		DEBUG_LOG("\n");
+	}
 
 	//Return the data and pass the size.
 	recvlen = bytes;
