@@ -342,7 +342,7 @@ void* Net::recvFromUDPBin(sockaddr* from, int* fromlen, int& recvlen)
 	int bytes = recvfrom(m_UDPSock, buf, NET_BUFFER_LEN, NULL, from, fromlen);
 
 	if (bytes > 0) {
-		DEBUG_LOG("[UDP] Send (Binary): ");
+		DEBUG_LOG("[UDP] Recv (Binary): ");
 		for (int i = 0; i < bytes; ++i) {
 			DEBUG_LOG("%02X ", ((char)buf[i]));
 		}

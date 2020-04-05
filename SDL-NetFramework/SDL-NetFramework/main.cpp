@@ -147,11 +147,15 @@ int main(int argc, char *argv[]) {
 
 		//Gotta receive those messages
 		int addrlen = addrinfoptr->ai_addrlen;
+		sockaddr addr = *addrinfoptr->ai_addr;
 		while (1) {
-			std::string data = Net::recvFromUDP(addrinfoptr->ai_addr, &addrlen);
+			printf("Try to receive data.\n");
+			std::string data = Net::recvFromUDP(&addr, &addrlen);
 			if (data == "") {
+				printf("Would block.\n");
 				break;
 			}
+			printf("Parsing data...\n");
 			
 			//Parse that dang data
 			int numClients = 0;
@@ -248,7 +252,13 @@ int main(int argc, char *argv[]) {
 		memset(buf, 0, 32);
 		sprintf_s(buf, "%f %f", pos.x, pos.y);
 		if (lastPos != pos) {
-			Net::sendToUDP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, std::string(buf));
+
+			int addrlen = addrinfoptr->ai_addrlen;
+			sockaddr addr = *addrinfoptr->ai_addr;
+			Net::sendToUDP(&addr, addrlen, std::string(buf));
+		}
+		else {
+			Net::sendToUDP(&addr, addrlen, std::string("0"));
 		}
 	}
 

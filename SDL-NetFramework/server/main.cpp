@@ -199,9 +199,10 @@ int main()
 		//Receive messages
 		{
 			char buf[512];
-			printf("Clear client list.\n");
+			printf("Clearing client list...\n");
 			for (int i = 0; i < clientList.size(); ++i) {
 				clientList[i].positionChanged = 0;
+				printf("Clear position change %d\n", i);
 			}
 			for (int i = 0; i < clientList.size(); ++i) {
 				memset(buf, 0, 512);
@@ -261,7 +262,12 @@ int main()
 		//Send the packet update.
 		for (int i = 0; i < clientList.size(); ++i) {
 			printf("SENDING TO %s: %s\n", clientList[i].name, buf);
-			sendto(udpSock, buf, strlen(buf), 0, (sockaddr*)&clientList[i].address, namelen);
+			if (sendto(udpSock, buf, strlen(buf), 0, (sockaddr*)&clientList[i].address, namelen) == SOCKET_ERROR) {
+				fprintf_s(stderr, "SENDTO failed: WSAError: %ld\n", WSAGetLastError());
+			}
+			else {
+				printf("Sent.\n");
+			}
 		}
 
 		//Exit on "Q"
