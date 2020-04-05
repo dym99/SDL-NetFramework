@@ -191,43 +191,34 @@ int main()
 
 	//Run thread asnychronously.
 	listenThread.detach();
-	
-	std::thread recvThread = std::thread([&udpSock]() {
-		while (serverRunning) {
-			
-		}
-		});
-	recvThread.detach();
 
 	
 	//Run game server.
 	std::chrono::time_point<std::chrono::steady_clock>	lastClock = std::chrono::steady_clock::now(), now=std::chrono::steady_clock::now();
 	while (serverRunning) {
+		//Receive messages
 		{
 			char buf[512];
-			for (Client client : (clientList)) {
-				client.positionChanged = 0;
+			printf("Clear client list.\n");
+			for (int i = 0; i < clientList.size(); ++i) {
+				clientList[i].positionChanged = 0;
 			}
-			for (Client client : (clientList)) {
+			for (int i = 0; i < clientList.size(); ++i) {
 				memset(buf, 0, 512);
 				int namelen = sizeof(sockaddr_in);
-				int received = recvfrom(udpSock, buf, 512, 0, (sockaddr*)&client.address, &namelen);
+				int received = recvfrom(udpSock, buf, 512, 0, (sockaddr*)&clientList[i].address, &namelen);
 				//If no error occured...
 				if (received != SOCKET_ERROR) {
-					printf("RECV from %s: ", client.name);
-					for (int i = received; i >= 0; --i) {
-						printf("%02X ", buf[i]);
-					}
+					printf("RECV from %s: %s", clientList[i].name, buf);
 					printf("\n");
 				}
 				//If the packet has contents...
 				if (received > 0) {
-					//If the contents are the correct size...
-					if (received == sizeof(float) * 2) {
-						//Set position update.
-						client.positionChanged = 1;
-						client.positionUpdate.x = *(&buf[0]);
-						client.positionUpdate.y = *(&buf[4]);
+					//Try and parse it
+					if (sscanf_s(buf, "%f %f", &clientList[i].positionUpdate.x, &clientList[i].positionUpdate.y)==2) {
+						//Set position as changed if successfully read.
+						clientList[i].positionChanged = 1;
+						printf("Position received: %f, %f\n", clientList[i].positionUpdate.x, clientList[i].positionUpdate.y);
 					}
 					
 				}
@@ -235,7 +226,7 @@ int main()
 		}
 		//Wait until it is time to send the packet.
 		lastClock = now;
-		while (std::chrono::duration_cast<std::chrono::milliseconds>(now-lastClock)<std::chrono::microseconds(TICK_DELAY)) {
+		while (std::chrono::duration_cast<std::chrono::milliseconds>(now-lastClock)<std::chrono::milliseconds(TICK_DELAY)) {
 			now = std::chrono::steady_clock::now();
 		}
 
@@ -244,43 +235,33 @@ int main()
 		char buf[512] = {};
 		memset(buf, 0, 512);
 
-		//Fill in the packet
-		int bufIterator = 0;
+		size_t index = 0;
+		index = sprintf_s(buf, size_t(512), "%d\n", (int)clientList.size());
 
-		//Place the number of clients into the byte array first
-		*(int*)((void*)&buf[bufIterator]) = (int)clientList.size();
-
-		//Increment the iterator by the number of bytes put there. (So it isn't overwritten)
-		bufIterator += sizeof(int);
 
 		//Loop through and do the same for all the client info.
 		for (int i = 0; i < clientList.size(); ++i) {
 			//Shorthand for clientList[i]
 			const Client& client = clientList[i];
+			printf("Client %d: %f %f\n", i, client.positionUpdate.x, client.positionUpdate.y);
 
 			//Identify the client by its index
-			*(int*)((void*)&buf[bufIterator]) = i;
-			bufIterator += sizeof(int);
+			index += sprintf_s(buf+index, size_t(512) - index, "%d ", i);
 
 			//Is a position provided (Did the position change?)
-			*(bool*)((void*)&buf[bufIterator]) = client.positionChanged;
-			bufIterator += sizeof(bool);
+			index += sprintf_s(buf + index, size_t(512) - index, "%d ", client.positionChanged);
 
 			//If so, stick the new position in there too.
 			if (client.positionChanged) {
-				*(vec2*)((void*)&buf[bufIterator]) = client.positionUpdate;
-				bufIterator += sizeof(vec2);
+				index += sprintf_s(buf + index, size_t(512) - index, "%f %f\n", client.positionUpdate.x, client.positionUpdate.y);
 			}
 		}
 
-		printf("SENDING: ");
-		for (int i = 0; i < bufIterator; ++i) {
-			printf("%02X ", buf[i]);
-		}
-		printf("\n");
+		printf("SENDING: %s\n", buf);
 		//Send the packet update.
 		for (Client client : clientList) {
-			sendto(udpSock, buf, 512, 0, (sockaddr*)&client.address, namelen);
+			printf("SENDING TO %s: %s\n", client.name, buf);
+			sendto(udpSock, buf, strlen(buf), 0, (sockaddr*)&client.address, namelen);
 		}
 
 		//Exit on "Q"

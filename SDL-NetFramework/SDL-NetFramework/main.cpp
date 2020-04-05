@@ -5,6 +5,9 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
+#include <string.h>
+
+
 #include "Window.h"
 #include "Debug.h"
 #include "Events.h"
@@ -143,72 +146,79 @@ int main(int argc, char *argv[]) {
 		}
 
 		//Gotta receive those messages
-		int recvlen = 0;
 		int addrlen = addrinfoptr->ai_addrlen;
 		while (1) {
-			void* data = Net::recvFromUDPBin(addrinfoptr->ai_addr, &addrlen, recvlen);
-			if (recvlen == -1) {
-				int err = WSAGetLastError();
-				if (err == WSAEWOULDBLOCK) {
-					break;
-				}
-				else {
-					DEBUG_LOG("Failed to recv! WSAError: %ld\n", err);
-					break;
-				}
+			std::string data = Net::recvFromUDP(addrinfoptr->ai_addr, &addrlen);
+			if (data == "") {
+				break;
 			}
 			
 			//Parse that dang data
+			int numClients = 0;
+			const char *dataStr = data.c_str();
+			char* currentPlace = (char*)dataStr;
+			if (sscanf_s(currentPlace, "%d", &numClients)==1) {
+				for (int i = 0; i < numClients; ++i) {
+					//Process a clientinfo
+					ClientInfo client = {};
 
-			//Ensure it is big enough to read an int.
-			if (recvlen >= 4) {
-				//The first four bytes are just the number of clients.
-				int numClients = *((int*)data);
-				//
-				// Each client data packet is:
-				//
-				//	| Client id (int)        |
-				//	|------------------------|
-				//	| Is pos changed? (bool) |
-				//	|------------------------|
-				//	| Position (2xfloat)     |
-				//
-				//	Grand total of 4+1+(4*2) = 13 bytes per player
-				//
+					//Initial value in case of failure.
+					client.posChanged = false;
+					client.pos = { 0,0 };
 
-				//ensure the packet is complete (enough room for each client and numClients (int)
-				if (recvlen < 13 * numClients + 4) {
-					//All good
-					//Loop through and extract those juicy position updates
-					//Start an iterator at the beginning (past numclients though)
-					int bufIterator = 0 + sizeof(int);
-					for (int i = 0; i < numClients; ++i) {
-						int cli_id = *((int*)((char*)data)[bufIterator]);
-						bufIterator += sizeof(int);
-						bool cli_isPosChanged = *((bool*)((char*)data)[bufIterator]);
-						bufIterator += sizeof(bool);
-						glm::vec2 cli_pos = glm::vec2(0, 0);
-						if (cli_isPosChanged) {
-							cli_pos = *((glm::vec2*)((char*)data)[bufIterator]);
-							bufIterator += sizeof(glm::vec2);
+					//Next line.
+					currentPlace = strchr(currentPlace, '\n') + 1;
+					if (!currentPlace) {
+						DEBUG_LOG("Unexpected end of string!\n");
+						break;
+					}
+
+					//Read clientID
+					int clientID = 0;
+					if (sscanf_s(currentPlace, "%d", &clientID) != 1) {
+						DEBUG_LOG("Failed to read clientID for index %d\n", i);
+						break;
+					}
+
+					//Next line
+					currentPlace = strchr(currentPlace, '\n') + 1;
+					if (!currentPlace) {
+						DEBUG_LOG("Unexpected end of string!\n");
+						break;
+					}
+
+					//Read posChanged
+					int clientPosChanged = 0;
+					if (sscanf_s(currentPlace, "%d", &clientPosChanged) != 1) {
+						DEBUG_LOG("Failed to read posChanged for index %d\n", i);
+						break;
+					}
+
+					//If position changed
+					if (clientPosChanged) {
+						//Next line
+						currentPlace = strchr(currentPlace, '\n') + 1;
+						if (!currentPlace) {
+							DEBUG_LOG("Unexpected end of string!\n");
+							break;
 						}
 
-						//Take those values and pass em to somewhere where they actually do something.
-						ClientInfo client;
-						client.posChanged = cli_isPosChanged;
-						client.pos = cli_pos;
-						activePlayers.insert_or_assign(cli_id, client);
+						//Read new position
+						glm::vec2 pos;
+						if (sscanf_s(currentPlace, "%f %f", &pos.x, &pos.y) != 2) {
+							client.pos = pos;
+							client.posChanged = true;
+						}
 					}
+
+					activePlayers.insert_or_assign(clientID, client);
 				}
-				else {
-					//Packet was bad
-					DEBUG_LOG("Bad packet: Packet too small to fit %d player infos\n", numClients);
-				}
+				
 			}
 			else {
-				//Packet was bad
-				DEBUG_LOG("Bad packet: Packet too small: only %d bytes.\n", recvlen);
+				DEBUG_LOG("Bad data received!\n");
 			}
+			
 
 		}
 
@@ -233,8 +243,12 @@ int main(int argc, char *argv[]) {
 
 		glm::vec2 lastPos = pBehaviour.getLastPos();
 		glm::vec2 pos = pBehaviour.getPos();
+
+		char buf[32] = {};
+		memset(buf, 0, 32);
+		sprintf_s(buf, "%f %f", pos.x, pos.y);
 		if (lastPos != pos) {
-			Net::sendToUDPBin(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, &pos, sizeof(glm::vec2));
+			Net::sendToUDP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen, std::string(buf));
 		}
 	}
 

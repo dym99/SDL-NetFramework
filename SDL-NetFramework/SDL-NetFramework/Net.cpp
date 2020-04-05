@@ -287,8 +287,18 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 	//Null-terminate, just in case.
 	buf[NET_BUFFER_LEN - 1] = '\0';
 
-	if (bytes == 0) {
-		DEBUG_LOG("UDP recv failed! WSAError: %ld\n", WSAGetLastError());
+	if (bytes == -1) {
+		int err = WSAGetLastError();
+		if (err == WSAEWOULDBLOCK) {
+			DEBUG_LOG("Would block!\n");
+			return "";
+		}
+		else {
+			DEBUG_LOG("RECVFROM failed!\nWSAError: %ld\n", err);
+		}
+	}
+	else if (bytes == 0) {
+		//DEBUG_LOG("UDP recv failed! WSAError: %ld\n", WSAGetLastError());
 	}
 	else {
 		DEBUG_LOG("[UDP] Recv: %s\n", buf);
