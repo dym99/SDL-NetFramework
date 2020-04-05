@@ -246,10 +246,10 @@ int main()
 			printf("Client %d: %f %f\n", i, client.positionUpdate.x, client.positionUpdate.y);
 
 			//Identify the client by its index
-			index += sprintf_s(buf+index, size_t(512) - index, "%d ", i);
+			index += sprintf_s(buf+index, size_t(512) - index, "%d\n", i);
 
 			//Is a position provided (Did the position change?)
-			index += sprintf_s(buf + index, size_t(512) - index, "%d ", client.positionChanged);
+			index += sprintf_s(buf + index, size_t(512) - index, "%d\n", client.positionChanged);
 
 			//If so, stick the new position in there too.
 			if (client.positionChanged) {
@@ -259,9 +259,9 @@ int main()
 
 		printf("SENDING: %s\n", buf);
 		//Send the packet update.
-		for (Client client : clientList) {
-			printf("SENDING TO %s: %s\n", client.name, buf);
-			sendto(udpSock, buf, strlen(buf), 0, (sockaddr*)&client.address, namelen);
+		for (int i = 0; i < clientList.size(); ++i) {
+			printf("SENDING TO %s: %s\n", clientList[i].name, buf);
+			sendto(udpSock, buf, strlen(buf), 0, (sockaddr*)&clientList[i].address, namelen);
 		}
 
 		//Exit on "Q"

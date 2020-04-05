@@ -290,7 +290,7 @@ std::string Net::recvFromUDP(sockaddr* from, int* fromlen)
 	if (bytes == -1) {
 		int err = WSAGetLastError();
 		if (err == WSAEWOULDBLOCK) {
-			DEBUG_LOG("Would block!\n");
+			//Would block, so return empty string.
 			return "";
 		}
 		else {
