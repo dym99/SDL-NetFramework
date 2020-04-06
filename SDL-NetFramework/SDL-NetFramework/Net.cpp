@@ -135,11 +135,13 @@ bool Net::connectTCP(const sockaddr* addrinfo, int namelen)
 	}
 
 	//Non-blocking mode after connection
+	
+	/*
 	unsigned long iMode = 1;
 	int iResult = ioctlsocket(m_TCPSock, FIONBIO, &iMode);
 	if (iResult != NO_ERROR)
 		printf("ioctlsocket failed with error: %ld\n", iResult);
-
+		*/
 	return true;
 }
 

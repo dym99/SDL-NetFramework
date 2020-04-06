@@ -80,6 +80,9 @@
     <ClCompile Include="PlayerBehaviour.cpp">
       <Filter>Source Files\Behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="RemotePlayerBehaviour.cpp">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -120,6 +123,12 @@
     </ClInclude>
     <ClInclude Include="PlayerBehaviour.h">
       <Filter>Source Files\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="RemotePlayerBehaviour.h">
+      <Filter>Source Files\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInfo.h">
+      <Filter>Source Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

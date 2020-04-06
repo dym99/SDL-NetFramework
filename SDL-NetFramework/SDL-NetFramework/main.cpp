@@ -14,7 +14,10 @@
 #include "Scene.h"
 #include "Time.h"
 #include "PlayerBehaviour.h"
+#include "RemotePlayerBehaviour.h"
 #include "ScoreKeeper.h"
+
+#include "ClientInfo.h"
 
 #include "Net.h"
 
@@ -32,10 +35,11 @@ static int clientnamelen = sizeof(sockaddr);
 
 static struct addrinfo* addrinfoptr = NULL, hints;
 
-struct ClientInfo {
-	bool posChanged = false;
-	glm::vec2 pos = {};
-};
+//Interval between packets sent (in milliseconds)
+static int sendInterval = 16;
+
+
+int selfID = 0;
 
 static std::unordered_map<int, ClientInfo> activePlayers;
 
@@ -106,6 +110,14 @@ int main(int argc, char *argv[]) {
 	}
 	else {
 		Net::connectTCP(addrinfoptr->ai_addr, addrinfoptr->ai_addrlen);
+		std::string selfIDStr = Net::recvTCP();
+		
+		if (sscanf_s(selfIDStr.c_str(), "%d", &selfID) != 1) {
+			fprintf_s(stderr, "Failed to parse client ID!\n");
+		}
+		else {
+			printf("Client ID: %d\n", selfID);
+		}
 	}
 
 	PlayerBehaviour pBehaviour = PlayerBehaviour();
@@ -143,19 +155,35 @@ int main(int argc, char *argv[]) {
 		//Gotta clear those "posChanged"!
 		for (auto i = activePlayers.begin(); i != activePlayers.end(); ++i) {
 			i->second.posChanged = false;
+
+			//Also check if the player has an avatar
+
+			//If you are this player, you have one, so don't worry about it.
+			if (i->first != selfID) {
+				
+				//If no avatar exists, make one.
+				if (!i->second.hasAvatar) {
+					i->second.hasAvatar = 1;
+					i->second.remotePlayerSprite = new Sprite(&alien, { 32, 32 }, { 32, 32 });
+					i->second.remotePlayer = new RemotePlayerBehaviour(&activePlayers, i->first);
+					i->second.remotePlayerSprite->addBehaviour(i->second.remotePlayer);
+					testScene.addSprite(i->second.remotePlayerSprite);
+				}
+
+			}
 		}
+
+		printf("My ID: %d\n", selfID);
 
 		//Gotta receive those messages
 		int addrlen = addrinfoptr->ai_addrlen;
 		sockaddr addr = *addrinfoptr->ai_addr;
 		while (1) {
-			printf("Try to receive data.\n");
 			std::string data = Net::recvFromUDP(&addr, &addrlen);
 			if (data == "") {
 				printf("Would block.\n");
 				break;
 			}
-			printf("Parsing data...\n");
 			
 			//Parse that dang data
 			int numClients = 0;
@@ -184,6 +212,12 @@ int main(int argc, char *argv[]) {
 						break;
 					}
 
+					if ((activePlayers.find(clientID) != activePlayers.end())) {
+						client = activePlayers.at(clientID);
+						client.posChanged = false;
+						client.pos = { 0,0 };
+					}
+
 					//Next line
 					currentPlace = strchr(currentPlace, '\n') + 1;
 					if (!currentPlace) {
@@ -197,7 +231,6 @@ int main(int argc, char *argv[]) {
 						DEBUG_LOG("Failed to read posChanged for index %d\n", i);
 						break;
 					}
-
 					//If position changed
 					if (clientPosChanged) {
 						//Next line
@@ -206,16 +239,17 @@ int main(int argc, char *argv[]) {
 							DEBUG_LOG("Unexpected end of string!\n");
 							break;
 						}
-
 						//Read new position
-						glm::vec2 pos;
-						if (sscanf_s(currentPlace, "%f %f", &pos.x, &pos.y) != 2) {
+						glm::vec2 pos = glm::vec2(0,0);
+						if (sscanf_s(currentPlace, "%f %f", &pos.x, &pos.y) == 2) {
 							client.pos = pos;
 							client.posChanged = true;
 						}
 					}
 
-					activePlayers.insert_or_assign(clientID, client);
+					if (clientID != selfID) {
+						activePlayers.insert_or_assign(clientID, client);
+					}
 				}
 				
 			}
@@ -241,7 +275,8 @@ int main(int argc, char *argv[]) {
 		lastClockChrono = nowChrono;
 		nowChrono = std::chrono::steady_clock::now();
 
-		while (std::chrono::duration_cast<std::chrono::milliseconds>(nowChrono - lastClockChrono) < std::chrono::milliseconds(/*16*/250)) {
+		//Freeze the thread for the duration of the send interval.
+		while (std::chrono::duration_cast<std::chrono::milliseconds>(nowChrono - lastClockChrono) < std::chrono::milliseconds(sendInterval)) {
 			nowChrono = std::chrono::steady_clock::now();
 		}
 
@@ -258,11 +293,30 @@ int main(int argc, char *argv[]) {
 			Net::sendToUDP(&addr, addrlen, std::string(buf));
 		}
 		else {
+			//Send a dummy packet because for some reason it won't receive unless a packet has been sent?
+			//We don't know why this is neccesary and the program occasionally works without this line.
+			//We've spent a couple days now trying to figure this out and it works.
+			//And if it works, don't fix it.
 			Net::sendToUDP(&addr, addrlen, std::string("0"));
 		}
 	}
 
 	//Clean up
+
+	//Delete dynamically allocated sprites.
+	for (auto i = activePlayers.begin(); i != activePlayers.end(); ++i) {
+		//If you are this player, your sprite wasn't dynamically allocated.
+		if (i->first != selfID) {
+
+			if (i->second.remotePlayerSprite) {
+				delete i->second.remotePlayerSprite;
+			}
+			if (i->second.remotePlayer) {
+				delete i->second.remotePlayer;
+			}
+
+		}
+	}
 	
 	Net::closeTCPSocket();
 	Net::closeUDPSocket();

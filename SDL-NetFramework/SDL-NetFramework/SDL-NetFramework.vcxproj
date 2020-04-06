@@ -89,6 +89,7 @@
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RemotePlayerBehaviour.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScoreKeeper.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -98,9 +99,11 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="IBehaviour.h" />
     <ClInclude Include="Net.h" />
     <ClInclude Include="PlayerBehaviour.h" />
+    <ClInclude Include="RemotePlayerBehaviour.h" />
     <ClInclude Include="ScoreKeeper.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Time.h" />

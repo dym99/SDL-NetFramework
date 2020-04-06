@@ -11,7 +11,7 @@
 #include <vector>
 
 #define MAX_CLIENTS 8
-#define TICK_DELAY 250//16
+#define TICK_DELAY 16
 
 bool serverRunning = false;
 
@@ -143,32 +143,21 @@ int main()
 	std::thread listenThread = std::thread([&serverSocket, &addrInfo, &namelen, &udpSock]() {
 		printf("Starting listenThread...\n");
 		while (serverRunning) {
-			SOCKET client = accept(serverSocket, (sockaddr*)(&addrInfo), &namelen);
+			SOCKET clientSock = accept(serverSocket, (sockaddr*)(&addrInfo), &namelen);
 			printf("Incoming connection request...\n");
 
-			if (client == INVALID_SOCKET) {
+			if (clientSock == INVALID_SOCKET) {
 				fprintf(stderr, "Failed to accept incoming connection!\nWSAError: %ld\n", WSAGetLastError());
 			}
 			else {
-				//Opened connection. Set client socket to non-blocking mode.
-				//Close it if it fails.
-				unsigned long iMode = 1;
-				int iResult = ioctlsocket(client, FIONBIO, &iMode);
-				if (iResult != NO_ERROR) {
-					fprintf(stderr, "ioctlsocket failed with error: %ld\n", iResult);
-					shutdown(client, SD_BOTH);
-					closesocket(client);
-					continue;
-				}
-
 				sockaddr_in clientaddr = {};
 				int clientnamelen = sizeof(sockaddr_in);
 				
 				//Shutdown the socket if getpeername fails.
-				if (getpeername(client, (sockaddr*)& clientaddr, &clientnamelen) == SOCKET_ERROR) {
+				if (getpeername(clientSock, (sockaddr*)& clientaddr, &clientnamelen) == SOCKET_ERROR) {
 					fprintf(stderr, "getpeername failed!\nWSAError: %ld\n", WSAGetLastError());
-					shutdown(client, SD_BOTH);
-					closesocket(client);
+					shutdown(clientSock, SD_BOTH);
+					closesocket(clientSock);
 					continue;
 				}
 
@@ -183,8 +172,17 @@ int main()
 				client.name = ipaddr;
 				client.positionChanged = 0;
 				client.positionUpdate = {};
+				
 
 				clientList.push_back(client);
+
+				int idx = clientList.size()-1;
+				char idxbuf[24];
+				memset(idxbuf, 0, 24);
+				sprintf_s(idxbuf, "%d", idx);
+				if (send(clientSock, idxbuf, strlen(idxbuf), 0) == SOCKET_ERROR) {
+					printf("Failed to send client ID (id=%d): WSAError: %ld", idx, WSAGetLastError());
+				}
 			}
 		}
 	});

@@ -19,7 +19,8 @@ PlayerBehaviour::PlayerBehaviour()
 {
 	m_lastPos = glm::vec2();
 	m_currentPos = glm::vec2();
-	m_speed = 128;
+	m_accel = 600.0f;
+	m_vel = glm::vec2();
 }
 
 PlayerBehaviour::~PlayerBehaviour()
@@ -38,25 +39,30 @@ void PlayerBehaviour::update()
 	if (EVENTS->isKeyHeld(SDLK_UP) || EVENTS->isKeyHeld(SDLK_w))
 	{
 		//current position + y
-		m_currentPos.y -= m_speed * Time::deltaTime;
+		m_vel.y -= m_accel * Time::deltaTime;
 	}
 	
 	if (EVENTS->isKeyHeld(SDLK_DOWN) || EVENTS->isKeyHeld(SDLK_s))
 	{
 		//current position - y
-		m_currentPos.y += m_speed * Time::deltaTime;
+		m_vel.y += m_accel * Time::deltaTime;
 	}
 	if (EVENTS->isKeyHeld(SDLK_LEFT) || EVENTS->isKeyHeld(SDLK_a))
 	{
 		//current position -x
-		m_currentPos.x -= m_speed * Time::deltaTime;
+		m_vel.x -= m_accel * Time::deltaTime;
 	}
 	if (EVENTS->isKeyHeld(SDLK_RIGHT) || EVENTS->isKeyHeld(SDLK_d))
 	{
 		//current position + x
-		m_currentPos.x += m_speed * Time::deltaTime;
+		m_vel.x += m_accel * Time::deltaTime;
 
 	}
+
+	//Dempen velocity
+	m_vel *= 0.9f;
+
+	m_currentPos += m_vel * Time::deltaTime;
 
 	getSprite()->setPosition(m_currentPos);
 }
